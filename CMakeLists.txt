@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
-set(COPYRIGHT_YEAR_START 2023)
+set(COPYRIGHT_YEAR_START 2024)
 
 set(PROJECT_VERSION_MAJOR "1" CACHE STRING "The major version. Will only change if interface in incompatible to the version before.")
 set(PROJECT_VERSION_MINOR "0" CACHE STRING "The minor version. Will change with essential changes.")
@@ -24,6 +24,7 @@ list(APPEND CMAKE_MODULE_PATH
 # implement the main function for our unit tests by ourself
 option(BUILD_SHARED_LIBS            "Build project libraries as shared libraries" OFF)
 option(BUILD_TESTING                "Build with tests" OFF)
+option(BUILD_BENCHMARK              "Build with benchmark tests" OFF)
 option(BUILD_DOC                    "Build documentation" OFF)
 option(DEBUG_POSTFIX                "Set to ON to force _d postfix for the lib names." ON)
 option(ENABLE_SOLUTION_FOLDERS      "Solution folder in Visual Studio or in other IDEs" ON)
@@ -79,6 +80,10 @@ if(BUILD_TESTING)
     include(GoogleTestTesting)
     enable_testing()
 endif(BUILD_TESTING)
+
+if(BUILD_BENCHMARK)
+    include(BenchmarkIntegration)
+endif(BUILD_BENCHMARK)
 
 if(BUILD_DOC)
     #include(DoxygenSupport)

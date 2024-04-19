@@ -9,6 +9,7 @@
 #include <cvl/core/AlignedAllocator.h>
 #include <cvl/core/Alignment.h>
 #include <cvl/core/ImageTraits.h>
+#include <cvl/core/Rectangle.h>
 #include <cvl/core/Size.h>
 #include <cvl/core/Types.h>
 #include <cvl/core/macros.h>
@@ -107,6 +108,16 @@ public:
     Image( Image&& other ) noexcept;
 
     /**
+     * Value construct
+     *
+     * @brief The constructor creates a cv::Mat using a ROI from an other image
+     *
+     * @param other    The other image
+     * @param roi      The roi to use
+     */
+    Image( const Image& other, const Rectangle< int32_t >& roi );
+
+    /**
      * Destructor
      */
     ~Image( ) override;
@@ -138,6 +149,13 @@ public:
      * @param [in]  other  The point to compare with
      */
     constexpr bool operator!=( const Image& other ) const noexcept;
+
+    /**
+     * ROI operator
+     *
+     * @param [in]  roi  The ROI to crop
+     */
+    Image operator( )( const Rectangle< int32_t >& roi ) const;
 
     /**
      * Accessor width
@@ -240,6 +258,21 @@ public:
      */
     constexpr allocator_type getAllocator( ) const;
 
+    /**
+     *
+     * @brief Copies the content of an image to an other image.
+     *
+     * @param other    The image to be copied
+     */
+    void copyTo( Image& other ) const;
+
+    /**
+     * Function that returns a deep copy of an image.
+     *
+     * @return The clones image.
+     */
+    [[nodiscard]] Image clone( ) const;
+
 private:
     void swap( Image& other ) noexcept;
 
@@ -303,17 +336,17 @@ Image< PixelType, Channels, Allocator >::Image( int32_t width, int32_t height,
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
 Image< PixelType, Channels, Allocator >::Image( const Image& other )
-    : mStride( other.mStride )
-    , mSize( other.mSize )
+
 {
-    mData = allocator_traits::allocate( mAllocator,
+    other.copyTo( *this );
+    /*mData = allocator_traits::allocate( mAllocator,
                                         static_cast< size_t >( getStride( ) ) *
                                             mSize.getHeight( ) * Channels );
 
     std::memcpy( mData,
                  other.mData,
                  static_cast< size_t >( mStride ) * mSize.getHeight( ) *
-                     Channels );
+                     Channels );*/
 }
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
@@ -325,6 +358,30 @@ Image< PixelType, Channels, Allocator >::Image( Image&& other ) noexcept
 {
     // Invalidate the date of the moved object.
     other.mData = nullptr;
+}
+
+template < Arithmetic PixelType, int32_t Channels, typename Allocator >
+Image< PixelType, Channels, Allocator >::Image(
+    const Image& other, const Rectangle< int32_t >& roi )
+    : mStride( other.mStride )
+    , mSize( roi.getSize( ) )
+    , mReleaseMemory( false )
+{
+    // Memory is organized in a monotonic buffer
+    // In case of a multichannel image the data is organized as follows:
+    // R G B R G B ...
+    // R G B R G B ...
+    // ...
+
+    // Since the pointer is a typed pointer we need to have the offset in normal
+    // offset, not in bytes. Otherwise, we move too far.
+    const auto typeStride = mStride / sizeof( PixelType );
+    const auto left = roi.getLeft( );
+    const auto top = roi.getTop( );
+
+    const auto offset = typeStride * top + left;
+
+    mData = other.mData + offset;
 }
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
@@ -422,6 +479,14 @@ constexpr bool Image< PixelType, Channels, Allocator >::operator!=(
     const Image& other ) const noexcept
 {
     return ! operator==( other );
+}
+
+template < Arithmetic PixelType, int32_t Channels, typename Allocator >
+Image< PixelType, Channels, Allocator >
+Image< PixelType, Channels, Allocator >::operator( )(
+    const Rectangle< int32_t >& roi ) const
+{
+    return Image( *this, roi );
 }
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
@@ -650,6 +715,42 @@ getCalculationImage(
         return core::Image< PixelTypeOut, Channels, OutAllocator >(
             size, zeroInitialize );
     }
+}
+
+template < Arithmetic PixelType, int32_t Channels, typename Allocator >
+void Image< PixelType, Channels, Allocator >::copyTo( Image& other ) const
+{
+    if ( other.mSize != mSize )
+    {
+        other = Image( mSize, false );
+    }
+
+    if ( other.mStride != mStride )
+    {
+        for ( int32_t y = 0; y < mSize.getHeight( ); y++ )
+        {
+            const auto dataSize = mSize.getWidth( ) * sizeof( PixelType );
+
+            const auto srcPtr = this->getRowPointer( y );
+            const auto dstPtr = other.getRowPointer( y );
+
+            std::memcpy( dstPtr, srcPtr, dataSize );
+        }
+    }
+    else
+    {
+        std::memcpy( other.mData,
+                     mData,
+                     static_cast< size_t >( mStride ) *
+                         static_cast< size_t >( mSize.getHeight( ) ) );
+    }
+}
+
+template < Arithmetic PixelType, int32_t Channels, typename Allocator >
+Image< PixelType, Channels, Allocator >
+Image< PixelType, Channels, Allocator >::clone( ) const
+{
+    return Image( *this );
 }
 
 using Image8UC1 = Image< uint8_t, 1 >;

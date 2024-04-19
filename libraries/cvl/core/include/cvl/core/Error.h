@@ -14,6 +14,9 @@ namespace cvl::core
  *
  *
  */
+#pragma warning( push )
+#pragma warning( disable : 4275 )
+#pragma warning( disable : 4251 )
 class CVL_CORE_EXPORT Error final : public std::exception
 {
 public:
@@ -69,5 +72,5 @@ private:
     unsigned int mLine;
     std::string mMessage;
 };
-
+#pragma warning( pop )
 } // namespace cvl::core

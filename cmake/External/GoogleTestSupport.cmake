@@ -1,23 +1,25 @@
+set( PROJECT_VERSION "1.10.0")
+set( PROJECT_NAME "googletest")
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 ExternalProject_Add(
-    googletest
-    PREFIX ${FETCHCONTENT_BASE_DIR}/googletest
+    ${PROJECT_NAME}
+    PREFIX ${FETCHCONTENT_BASE_DIR}/${PROJECT_NAME}
     GIT_REPOSITORY      https://github.com/google/googletest.git
-    GIT_TAG             release-1.10.0
-    SOURCE_DIR "${FETCHCONTENT_BASE_DIR}/googletest/googletest-1.10.0/src"
-    BINARY_DIR "${FETCHCONTENT_BASE_DIR}/googletest/googletest-1.10.0/build"
-    INSTALL_DIR "${FETCHCONTENT_BASE_DIR}/googletest/googletest-1.10.0/install"
+    GIT_TAG             "release-${PROJECT_VERSION}"
+    SOURCE_DIR "${FETCHCONTENT_BASE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${PROJECT_VERSION}/src"
+    BINARY_DIR "${FETCHCONTENT_BASE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${PROJECT_VERSION}/build"
+    INSTALL_DIR "${FETCHCONTENT_BASE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${PROJECT_VERSION}/install"
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DCMAKE_BUILD_TYPE=Release
     -Dgtest_force_shared_crt=ON
 )
 
-list(APPEND DEPENDENCIES googletest)
+list( APPEND DEPENDENCIES ${PROJECT_NAME} )
 
-set(GTest_DIR "${FETCHCONTENT_BASE_DIR}/googletest/googletest-1.10.0/install/lib/cmake/GTest")
+set( GTest_DIR "${FETCHCONTENT_BASE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${PROJECT_VERSION}/install/lib/cmake/GTest" )
 
 list(APPEND EXTRA_CMAKE_ARGS
     -DGTest_DIR:PATH=${GTest_DIR}

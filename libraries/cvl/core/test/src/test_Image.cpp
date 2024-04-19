@@ -636,3 +636,80 @@ TYPED_TEST( TestCvlCoreImage, AccessAt3ChannelTyped )
     EXPECT_EQ( image.at( 0, 2, 2 ), TypeParam { 102 } );
     EXPECT_EQ( image.at( 0, 3, 2 ), TypeParam { 0 } );
 }
+
+TYPED_TEST( TestCvlCoreImage, RoiOperator )
+{
+    auto imageFull = Image< TypeParam, 1 >( 12, 12, true );
+
+    const auto roi = Rectangle< int32_t >( Point2i { 2, 2 }, { 4, 4 } );
+
+    auto imageRoi = imageFull( roi );
+
+    // We expect changes on the ROI also happening on the original image
+
+    imageFull.at( 2, 2 ) = TypeParam { 100 };
+
+    EXPECT_EQ( imageFull.at( 2, 2 ), imageRoi.at( 0, 0 ) );
+}
+
+TEST( TestCvlCoreImage, CopyImageRoi )
+{
+    Image8UC1 imageOrg( 256, 256, true );
+
+    for ( int32_t y = 64; y < 192; y++ )
+    {
+        for ( int32_t x = 64; x < 192; x++ )
+        {
+            imageOrg.at( y, x ) = uint8_t { 128 };
+        }
+    }
+
+    const Rectangle< int32_t > roi( Point2i { 64, 64 }, { 128, 128 } );
+
+    const Image8UC1 imageRoi = imageOrg( roi );
+
+    EXPECT_EQ( imageRoi.getWidth( ), 128 );
+    EXPECT_EQ( imageRoi.getHeight( ), 128 );
+    EXPECT_EQ( imageRoi.getStride( ), 256 );
+
+    for ( int32_t y = 0; y < imageRoi.getHeight( ); y++ )
+    {
+        const auto roiRowPtr = imageRoi.getRowPointer( y );
+        for ( int32_t x = 0; x < imageRoi.getWidth( ); x++ )
+        {
+            EXPECT_EQ( imageRoi.at( y, x ), 128 );
+            EXPECT_EQ( roiRowPtr[ x ], 128 );
+        }
+    }
+
+    const Image8UC1 imageRoiCopy( imageRoi );
+
+    EXPECT_EQ( imageRoiCopy.getWidth( ), 128 );
+    EXPECT_EQ( imageRoiCopy.getHeight( ), 128 );
+    EXPECT_EQ( imageRoiCopy.getStride( ), 128 );
+
+    for ( int32_t y = 0; y < imageRoiCopy.getHeight( ); y++ )
+    {
+        const auto roiRowPtr = imageRoiCopy.getRowPointer( y );
+        for ( int32_t x = 0; x < imageRoiCopy.getWidth( ); x++ )
+        {
+            EXPECT_EQ( imageRoiCopy.at( y, x ), 128 );
+            EXPECT_EQ( roiRowPtr[ x ], 128 );
+        }
+    }
+}
+
+TYPED_TEST( TestCvlCoreImage, CopyTo )
+{
+}
+
+TYPED_TEST( TestCvlCoreImage, Clone )
+{
+    Image< TypeParam, 1 > image( 256, 125 );
+
+    image.at( 0, 0 ) = TypeParam { 5 };
+
+    const auto imageClone = image.clone( );
+
+    EXPECT_EQ( *imageClone.getData( ), 5 );
+}

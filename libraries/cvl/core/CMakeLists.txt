@@ -92,8 +92,13 @@ target_link_libraries( ${LIBRARY_NAME_RAW}
 
 if( BUILD_TESTING )
     # Build unit tests only if testing is enabled
-    add_subdirectory(test)
-endif( )
+    add_subdirectory( test )
+endif( BUILD_TESTING )
+
+if( BUILD_BENCHMARK )
+    # Build benchmark tests only if benchmarking is enabled
+    add_subdirectory( benchmark )
+endif( BUILD_BENCHMARK )
 
 if ( STATIC_CODE_ANALYSIS )
     set_target_properties(${pargs_TARGET} PROPERTIES
