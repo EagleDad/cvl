@@ -1,6 +1,8 @@
 set( LIBRARY_NAME "CVL::Core" )
 get_raw_target_name( ${LIBRARY_NAME} LIBRARY_NAME_RAW )
 
+find_package( TBB REQUIRED )
+
 add_library( ${LIBRARY_NAME_RAW} SHARED
     
     include/cvl/core/AccessTraits.h
@@ -88,6 +90,9 @@ install (
 target_link_libraries( ${LIBRARY_NAME_RAW}
     PRIVATE
         # Define any private dependencies here
+        TBB::tbb
+        TBB::tbbmalloc
+        TBB::tbbmalloc_proxy
 )
 
 if( BUILD_TESTING )

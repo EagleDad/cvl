@@ -561,9 +561,11 @@ TYPED_TEST( TestCvlCoreImage, AccessAtConstRefTyped )
 
     std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
+    auto dataPtr = data.get( );
+
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( dataPtr + y * width ) = TypeParam { 10 };
     }
 
     const Image< TypeParam, 1 > image(
@@ -583,42 +585,44 @@ TYPED_TEST( TestCvlCoreImage, AccessAt3ChannelTyped )
     Image< TypeParam, 3 > image( width, height, true );
 
     constexpr auto typeStride = width;
+    constexpr auto offset = typeStride * height;
 
     {
         auto data = image.getData( );
-        data[ 0 ] = TypeParam { 100 };
 
-        data += typeStride * height;
-        data[ 0 ] = TypeParam { 100 };
+        *data = uint8_t { 100 };
 
-        data += typeStride * height;
-        data[ 0 ] = TypeParam { 100 };
+        data += offset;
+        *data = uint8_t { 100 };
+
+        data += offset;
+        *data = uint8_t { 100 };
     }
 
     {
         auto data = image.getData( );
         ++data;
 
-        data[ 0 ] = TypeParam { 101 };
+        *data = uint8_t { 101 };
 
-        data += typeStride * height;
-        data[ 0 ] = TypeParam { 101 };
+        data += offset;
+        *data = uint8_t { 101 };
 
-        data += typeStride * height;
-        data[ 0 ] = TypeParam { 101 };
+        data += offset;
+        *data = uint8_t { 101 };
     }
 
     {
         auto data = image.getData( );
         data += 2;
 
-        data[ 0 ] = TypeParam { 102 };
+        *data = uint8_t { 102 };
 
-        data += typeStride * height;
-        data[ 0 ] = TypeParam { 102 };
+        data += offset;
+        *data = uint8_t { 102 };
 
-        data += typeStride * height;
-        data[ 0 ] = TypeParam { 102 };
+        data += offset;
+        *data = uint8_t { 102 };
     }
 
     EXPECT_EQ( image.at( 0, 0, 0 ), TypeParam { 100 } );

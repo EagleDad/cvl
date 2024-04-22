@@ -23,7 +23,8 @@ threshold( const cvl::core::Image< PixelType, 1, Allocator >& imageIn,
     using OutAllocator =
         typename allocator_traits::template rebind_alloc< PixelType >;
 
-    auto segmented = cvl::core::getCalculationImage< PixelType >( imageIn );
+    auto segmented = cvl::core::Image< PixelType, 1, Allocator >(
+        imageIn.getSize( ), false, imageIn.getAllocator( ) );
 
     for ( int32_t y = 0; y < imageIn.getHeight( ); y++ )
     {
@@ -82,9 +83,7 @@ int32_t main( [[maybe_unused]] int32_t argc, [[maybe_unused]] char** argv )
 
         cvl::core::
             Image< uint8_t, 1, std::pmr::polymorphic_allocator< uint8_t > >
-                pmrImag1( &pool );
-
-        pmrImag1.allocate( 15, 15, true );
+                pmrImag1( 15, 15, true, &pool );
 
         void* p1 = pmrImag1.getData( );
         LOG_INFO( "Allocated at: " << p1 );
@@ -102,9 +101,7 @@ int32_t main( [[maybe_unused]] int32_t argc, [[maybe_unused]] char** argv )
 
         cvl::core::
             Image< uint8_t, 1, std::pmr::polymorphic_allocator< uint8_t > >
-                pmrImag2( &pool );
-
-        pmrImag2.allocate( 15, 15, true );
+                pmrImag2( 15, 15, true, &pool );
 
         void* p2 = pmrImag2.getData( );
         LOG_INFO( "Allocated at: " << p2 );
