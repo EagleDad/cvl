@@ -59,7 +59,7 @@ public:
     // ReSharper disable once CppMemberFunctionMayBeStatic
     void deallocate( pointer p, std::size_t num )
     {
-        if ( num != 0 )
+        if ( num != 0 && p != nullptr )
         {
 #if defined( WIN32 )
             _aligned_free( p );

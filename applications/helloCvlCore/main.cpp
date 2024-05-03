@@ -4,6 +4,7 @@
 // CVL Includes
 #include <cvl/core/ConsoleLoggingBackend.h>
 #include <cvl/core/DebugMemoryResource.h>
+#include <cvl/core/Handle.h>
 #include <cvl/core/ILogger.h>
 #include <cvl/core/Image.h>
 
@@ -19,10 +20,6 @@ cvl::core::Image< PixelType, 1,
 threshold( const cvl::core::Image< PixelType, 1, Allocator >& imageIn,
            PixelType threshold, uint8_t maxValue = uint8_t { 1 } )
 {
-    using allocator_traits = std::allocator_traits< Allocator >;
-    using OutAllocator =
-        typename allocator_traits::template rebind_alloc< PixelType >;
-
     auto segmented = cvl::core::Image< PixelType, 1, Allocator >(
         imageIn.getSize( ), false, imageIn.getAllocator( ) );
 

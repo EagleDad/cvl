@@ -8,6 +8,7 @@
 // CVL includes
 #include <cvl/core/AlignedAllocator.h>
 #include <cvl/core/Alignment.h>
+#include <cvl/core/Handle.h>
 #include <cvl/core/ImageTraits.h>
 #include <cvl/core/Rectangle.h>
 #include <cvl/core/Size.h>
@@ -26,8 +27,8 @@ class IImage
 
 /**
  * @brief This class describes a generic image class.
- * The data is managed by a cv::Mat, or passed by pointer
- * from an external resource
+ * The data is managed by a shared handle and is deleted if no other instance
+ * has access to the buffer anymore
  */
 template < Arithmetic PixelType, int32_t Channels,
            typename Allocator = AlignedAllocator< PixelType > >
@@ -40,6 +41,7 @@ public:
     using const_reference_type = const PixelType&;
     using allocator_type = Allocator;
     using allocator_traits = std::allocator_traits< allocator_type >;
+    using memory_handle = std::shared_ptr< Handle >;
 
     /**
      * Default constructor
@@ -49,7 +51,7 @@ public:
     /**
      * Value constructor
      *
-     * @brief The constructor creates an empty image and uses th allocator
+     * @brief The constructor creates an empty image and uses the allocator
      * passed for memory allocation.
      *
      * @param allocator     The allocator to be used for memory allocation.
@@ -86,9 +88,10 @@ public:
     /**
      * Value construct
      *
-     * @brief The constructor creates an image with the given dimensions.
-     * The data for the image will be allocated and managed. The buffer will be
-     * copied to the internal memory.
+     * @brief The constructor creates an image with the given dimensions and
+     * already allocated. The data for the image will not be allocated and not
+     * be managed. If the allocation instance disappears accessing the buffer
+     * will lead to undefined behaviour.
      *
      * @param width         The width of the image
      * @param height        The height of the image
@@ -102,9 +105,9 @@ public:
     /**
      * Copy constructor
      *
-     * @brief The copy constructor creates a deep copy to have a clear owner
-     * ship to the memory. If a shallow copy is required call the value
-     * constructor that takes the buffer as input.
+     * @brief The copy constructor creates a shallow copy of the image. No
+     * memory is copied. If a deep copy is required call call clone.
+     *
      *
      * @param other The image to copy from
      */
@@ -120,7 +123,7 @@ public:
     /**
      * Value construct
      *
-     * @brief The constructor creates a cv::Mat using a ROI from an other image
+     * @brief The constructor creates an image using a ROI from an other image
      *
      * @param other         The other image
      * @param roi           The roi to use
@@ -133,14 +136,13 @@ public:
     /**
      * Destructor
      */
-    ~Image( ) override;
+    ~Image( ) override = default;
 
     /**
      * Assignment operator
      *
-     * @brief The assignment operator creates a deep copy to have a clear owner
-     * ship to the memory. If a shallow copy is required call the value
-     * constructor that takes the buffer as input.
+     * @brief The assignment operator creates of the image. Nor memory is
+     * copied. If a deep copy is required call clone.
      *
      * @param [in]  other     The image to assign from
      */
@@ -172,7 +174,7 @@ public:
      *
      * @param [in]  roi  The ROI to crop
      */
-    Image operator( )( const Rectangle< int32_t >& roi ) const;
+    constexpr Image operator( )( const Rectangle< int32_t >& roi ) const;
 
     /**
      * Accessor width
@@ -259,7 +261,7 @@ public:
      *
      * @returns the allocator.
      */
-    constexpr allocator_type getAllocator( ) const;
+    [[nodiscard]] constexpr allocator_type getAllocator( ) const;
 
     /**
      *
@@ -277,20 +279,41 @@ public:
     [[nodiscard]] Image clone( ) const;
 
 private:
+    /**
+     * Function that swaps class members.
+     */
     void swap( Image& other ) noexcept;
 
+    /**
+     * Function that allocates the required image buffer.
+     */
     constexpr void allocate( );
-    constexpr void deallocate( );
-    constexpr size_t numberElements( ) const;
 
+    /**
+     * Function that return the number of pixels.
+     *
+     * @return The number of pixels
+     */
+    [[nodiscard]] constexpr size_t numberElements( ) const;
+
+    /**
+     * Function that calculates the offset from the beginning of the buffer to
+     * the defined position.
+     *
+     * @param [in]  row       The row to access
+     * @param [in]  column    The column to access
+     * @param [in]  channel   The channel to access
+     *
+     * @return The offset
+     */
     [[nodiscard]] constexpr size_t positionOffset( int32_t row, int32_t column,
                                                    int32_t channel ) const;
 
     int32_t mStride { };
-    SizeI mSize;
+    SizeI mSize { };
     pointer_type mData { nullptr };
     allocator_type mAllocator { };
-    bool mReleaseMemory { true };
+    memory_handle mMemoryHandle { nullptr };
 };
 
 //
@@ -336,29 +359,21 @@ template < Arithmetic PixelType, int32_t Channels, typename Allocator >
 Image< PixelType, Channels, Allocator >::Image(
     int32_t width, int32_t height, void* data, int32_t stride,
     const Allocator& allocator /*= Allocator( )*/ )
-    : mStride( stride / sizeof( PixelType ) )
+    : mStride( stride / static_cast< int32_t >( sizeof( PixelType ) ) )
     , mSize( width, height )
     , mData( static_cast< pointer_type >( data ) )
     , mAllocator( allocator )
-    , mReleaseMemory( false )
 {
 }
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
 Image< PixelType, Channels, Allocator >::Image( const Image& other )
-    : mStride( alignTo( other.getWidth( ),
-                        static_cast< int32_t >( width_alignment ) ) )
-    , mSize( other.getWidth( ), other.getHeight( ) )
+    : mStride( other.mStride )
+    , mSize( other.mSize )
+    , mData( other.mData )
     , mAllocator( other.mAllocator )
+    , mMemoryHandle( other.mMemoryHandle )
 {
-    // other.copyTo( *this );
-
-    allocate( );
-
-    other.copyTo( *this );
-
-    // std::memcpy(
-    //     mData, other.mData, other.numberElements( ) * sizeof( PixelType ) );
 }
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
@@ -367,7 +382,7 @@ Image< PixelType, Channels, Allocator >::Image( Image&& other ) noexcept
     , mSize( std::move( other.mSize ) )
     , mData( std::move( other.mData ) )
     , mAllocator( other.mAllocator )
-    , mReleaseMemory( other.mReleaseMemory )
+    , mMemoryHandle( std::move( other.mMemoryHandle ) )
 {
     // Invalidate the date of the moved object.
     other.mData = nullptr;
@@ -380,8 +395,10 @@ Image< PixelType, Channels, Allocator >::Image(
     : mStride( other.mStride )
     , mSize( roi.getSize( ) )
     , mAllocator( allocator )
-    , mReleaseMemory( false )
+    , mMemoryHandle( other.mMemoryHandle )
 {
+    // TODO: Memory handle, use offset for roi and call getData()
+
     // Memory is organized in a monotonic buffer
     // In case of a multichannel image the data is organized as follows:
     // R G B R G B ...
@@ -396,18 +413,14 @@ Image< PixelType, Channels, Allocator >::Image(
 
     const auto offset = typeStride * top + left;
 
+    // TODO: Store offset, to be able to delete the image if we are the last
+    // user
     mData = other.mData + offset;
 }
 
 //
 // Destruction
 //
-
-template < Arithmetic PixelType, int32_t Channels, typename Allocator >
-Image< PixelType, Channels, Allocator >::~Image( )
-{
-    deallocate( );
-}
 
 //
 // Operators
@@ -437,13 +450,7 @@ Image< PixelType, Channels, Allocator >::operator=( Image&& other ) noexcept
         this->mStride = other.mStride;
         this->mSize = other.mSize;
         this->mData = std::move( other.mData );
-        // this->mAllocator = other.mAllocator;
-
-        // Invalidate the date of the moved object.
-        other.mData = nullptr;
-        this->mReleaseMemory = false;
-
-        // std::pmr::allocator cannot be moved. How to handle this here??
+        this->mMemoryHandle = std::move( other.mMemoryHandle );
 
         if constexpr ( std::is_move_assignable_v< Allocator > )
         {
@@ -455,9 +462,10 @@ Image< PixelType, Channels, Allocator >::operator=( Image&& other ) noexcept
         }
         else
         {
-            /* std::exchange( this->mAllocator, other.mAllocator );
-             using _Ptrval = typename Allocator::value_type*;*/
         }
+
+        // Invalidate the date of the moved object.
+        other.mData = nullptr;
     }
 
     return *this;
@@ -498,7 +506,7 @@ constexpr bool Image< PixelType, Channels, Allocator >::operator!=(
 }
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
-Image< PixelType, Channels, Allocator >
+constexpr Image< PixelType, Channels, Allocator >
 Image< PixelType, Channels, Allocator >::operator( )(
     const Rectangle< int32_t >& roi ) const
 {
@@ -613,7 +621,12 @@ template < Arithmetic PixelType, int32_t Channels, typename Allocator >
 Image< PixelType, Channels, Allocator >
 Image< PixelType, Channels, Allocator >::clone( ) const
 {
-    return Image( *this );
+    Image< PixelType, Channels, Allocator > image(
+        this->getSize( ), false, mAllocator );
+
+    this->copyTo( image );
+
+    return image;
 }
 
 //
@@ -626,7 +639,7 @@ void Image< PixelType, Channels, Allocator >::swap( Image& other ) noexcept
     std::swap( this->mStride, other.mStride );
     std::swap( this->mSize, other.mSize );
     std::swap( this->mData, other.mData );
-    std::swap( this->mReleaseMemory, other.mReleaseMemory );
+    std::swap( this->mMemoryHandle, other.mMemoryHandle );
 
     Allocator tmp = other.mAllocator;
     other.mAllocator = this->mAllocator;
@@ -638,17 +651,15 @@ constexpr void Image< PixelType, Channels, Allocator >::allocate( )
 {
     // Note: The allocator is pixel type dependent. We need to pass a stride in
     // PixelType, not in bytes.
-    mData = allocator_traits::allocate( mAllocator, numberElements( ) );
-}
+    const auto elements = numberElements( );
+    mData = allocator_traits::allocate( mAllocator, elements );
 
-template < Arithmetic PixelType, int32_t Channels, typename Allocator >
-constexpr void Image< PixelType, Channels, Allocator >::deallocate( )
-{
-    if ( mReleaseMemory && mData != nullptr )
-    {
-        allocator_traits::deallocate( mAllocator, mData, numberElements( ) );
-        mData = { nullptr };
-    }
+    mMemoryHandle = std::make_shared< Handle >(
+        [ this, elements ]
+        {
+            allocator_traits::deallocate( mAllocator, mData, elements );
+            mData = { nullptr };
+        } );
 }
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >

@@ -97,7 +97,7 @@ TYPED_TEST( TestCvlCoreRegion, ConnectionFilledRect )
         }
     }
 
-    auto imgPtr = std::make_shared< Image< TypeParam, 1 > >( image );
+    auto imgPtr = std::make_shared< Image< TypeParam, 1 > >( image.clone( ) );
 
     std::vector< TypeParam > imageData( size );
 

@@ -645,7 +645,7 @@ TYPED_TEST( TestCvlCoreImage, RoiOperator )
 {
     auto imageFull = Image< TypeParam, 1 >( 12, 12, true );
 
-    const auto roi = Rectangle< int32_t >( Point2i { 2, 2 }, { 4, 4 } );
+    const auto roi = Rectangle( Point2i { 2, 2 }, { 4, 4 } );
 
     auto imageRoi = imageFull( roi );
 
@@ -668,7 +668,7 @@ TEST( TestCvlCoreImage, CopyImageRoi )
         }
     }
 
-    const Rectangle< int32_t > roi( Point2i { 64, 64 }, { 128, 128 } );
+    const Rectangle roi( Point2i { 64, 64 }, { 128, 128 } );
 
     const Image8UC1 imageRoi = imageOrg( roi );
 
@@ -686,7 +686,7 @@ TEST( TestCvlCoreImage, CopyImageRoi )
         }
     }
 
-    const Image8UC1 imageRoiCopy( imageRoi );
+    const Image8UC1 imageRoiCopy = imageRoi.clone( );
 
     EXPECT_EQ( imageRoiCopy.getWidth( ), 128 );
     EXPECT_EQ( imageRoiCopy.getHeight( ), 128 );
@@ -716,4 +716,47 @@ TYPED_TEST( TestCvlCoreImage, Clone )
     const auto imageClone = image.clone( );
 
     EXPECT_EQ( *imageClone.getData( ), 5 );
+
+    EXPECT_EQ( imageClone, image );
+}
+
+TYPED_TEST( TestCvlCoreImage, MultiLevelRoi )
+{
+    {
+        Image< TypeParam, 1 > image;
+
+        {
+            auto testImage = Image< TypeParam, 1 >( 16, 16, true );
+            auto strideCmp = testImage.getStride( );
+
+            testImage.at( 0, 0 ) = TypeParam { 1 };
+            testImage.at( 4, 4 ) = TypeParam { 8 };
+            testImage.at( 6, 6 ) = TypeParam { 4 };
+
+            const Rectangle roi1( Point2i { 4, 4 }, SizeI { 8, 8 } );
+
+            image = testImage( roi1 );
+
+            EXPECT_EQ( static_cast< int32_t >( image.at( 0, 0 ) ), 8 );
+            EXPECT_EQ( image.getSize( ), SizeI( 8, 8 ) );
+            EXPECT_EQ( image.getStride( ), strideCmp );
+
+            {
+                auto subTestImage = Image< TypeParam, 1 >(
+                    image.getWidth( ),
+                    image.getHeight( ),
+                    static_cast< void* >( image.getData( ) ),
+                    image.getStrideInBytes( ),
+                    image.getAllocator( ) );
+
+                const Rectangle roi2( Point2i { 2, 2 }, SizeI { 4, 4 } );
+
+                image = image( roi2 );
+
+                EXPECT_EQ( static_cast< int32_t >( image.at( 0, 0 ) ), 4 );
+                EXPECT_EQ( image.getSize( ), SizeI( 4, 4 ) );
+                EXPECT_EQ( image.getStride( ), strideCmp );
+            }
+        }
+    }
 }
