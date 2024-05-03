@@ -1,8 +1,6 @@
 set( LIBRARY_NAME "CVL::Core" )
 get_raw_target_name( ${LIBRARY_NAME} LIBRARY_NAME_RAW )
 
-find_package( TBB REQUIRED )
-
 add_library( ${LIBRARY_NAME_RAW} SHARED
     
     include/cvl/core/AccessTraits.h
@@ -14,7 +12,7 @@ add_library( ${LIBRARY_NAME_RAW} SHARED
     include/cvl/core/Contour.h
     include/cvl/core/ContourTraits.h
     include/cvl/core/CrtpBase.h
-	include/cvl/core/DebugMemoryResource.h
+    include/cvl/core/DebugMemoryResource.h
     include/cvl/core/DimensionTraits.h
     include/cvl/core/Ellipse.h
     include/cvl/core/Error.h
@@ -33,6 +31,7 @@ add_library( ${LIBRARY_NAME_RAW} SHARED
     include/cvl/core/Size.h
     include/cvl/core/SpinLock.h
     include/cvl/core/SynchronizedQueue.h
+    include/cvl/core/Time.h
     include/cvl/core/Types.h
     include/cvl/core/Vector.h
 
@@ -44,6 +43,7 @@ add_library( ${LIBRARY_NAME_RAW} SHARED
     src/ILogger.cpp
     src/Logger.cpp
     src/Logger.h
+    src/Time.cpp
     src/VirtualTables.cpp
 )
 
@@ -90,9 +90,6 @@ install (
 target_link_libraries( ${LIBRARY_NAME_RAW}
     PRIVATE
         # Define any private dependencies here
-        TBB::tbb
-        TBB::tbbmalloc
-        TBB::tbbmalloc_proxy
 )
 
 if( BUILD_TESTING )
@@ -135,4 +132,3 @@ install(
     DESTINATION bin
     OPTIONAL
 )
-

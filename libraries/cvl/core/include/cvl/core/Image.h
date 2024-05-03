@@ -346,7 +346,6 @@ Image< PixelType, Channels, Allocator >::Image(
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
 Image< PixelType, Channels, Allocator >::Image( const Image& other )
-    //    : mAllocator( other.mAllocator )
     : mStride( alignTo( other.getWidth( ),
                         static_cast< int32_t >( width_alignment ) ) )
     , mSize( other.getWidth( ), other.getHeight( ) )
