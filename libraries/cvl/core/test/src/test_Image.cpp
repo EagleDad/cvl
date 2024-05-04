@@ -760,3 +760,17 @@ TYPED_TEST( TestCvlCoreImage, MultiLevelRoi )
         }
     }
 }
+
+TYPED_TEST( TestCvlCoreImage, FillImgae )
+{
+    Image< TypeParam, 1 > image( 256, 125, TypeParam { 5 } );
+
+    for ( int32_t y = 0; y < image.getHeight( ); y++ )
+    {
+        const auto rowPtr = image.getRowPointer( y );
+        for ( int32_t x = 0; x < image.getWidth( ); x++ )
+        {
+            EXPECT_EQ( rowPtr[ x ], TypeParam { 5 } );
+        }
+    }
+}

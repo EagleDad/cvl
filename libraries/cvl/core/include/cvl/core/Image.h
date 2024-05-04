@@ -88,6 +88,32 @@ public:
     /**
      * Value construct
      *
+     * @brief The constructor creates an image with the defined dimensions an
+     * initialized with the passed value.
+     *
+     * @param width         The width of the image
+     * @param height        The height of the image
+     * @param value         The value to be used to initialize the buffer.
+     * @param allocator     The allocator object to be used
+     */
+    Image( int32_t width, int32_t height, PixelType value,
+           const Allocator& allocator = Allocator( ) );
+
+    /**
+     * Value construct
+     *
+     * @brief The constructor creates an image with the defined dimensions
+     *
+     * @param size              The size of the image
+     * @param value             The value to be used to initialize the buffer.
+     * @param allocator         The allocator object to be used
+     */
+    Image( const SizeI& size, PixelType value,
+           const Allocator& allocator = Allocator( ) );
+
+    /**
+     * Value construct
+     *
      * @brief The constructor creates an image with the given dimensions and
      * already allocated. The data for the image will not be allocated and not
      * be managed. If the allocation instance disappears accessing the buffer
@@ -141,8 +167,8 @@ public:
     /**
      * Assignment operator
      *
-     * @brief The assignment operator creates of the image. Nor memory is
-     * copied. If a deep copy is required call clone.
+     * @brief The assignment operator creates a shallow of the image. Nor memory
+     * is copied. If a deep copy is required call clone.
      *
      * @param [in]  other     The image to assign from
      */
@@ -357,6 +383,27 @@ Image< PixelType, Channels, Allocator >::Image(
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
 Image< PixelType, Channels, Allocator >::Image(
+    int32_t width, int32_t height, PixelType value,
+    const Allocator& allocator /*= Allocator( )*/ )
+    : mStride( alignTo( width, static_cast< int32_t >( width_alignment ) ) )
+    , mSize( width, height )
+    , mAllocator( allocator )
+{
+    allocate( );
+
+    std::fill_n( mData, numberElements( ), value );
+}
+
+template < Arithmetic PixelType, int32_t Channels, typename Allocator >
+Image< PixelType, Channels, Allocator >::Image(
+    const SizeI& size, PixelType value,
+    const Allocator& allocator /*= Allocator( )*/ )
+    : Image( size.getWidth( ), size.getHeight( ), value, allocator )
+{
+}
+
+template < Arithmetic PixelType, int32_t Channels, typename Allocator >
+Image< PixelType, Channels, Allocator >::Image(
     int32_t width, int32_t height, void* data, int32_t stride,
     const Allocator& allocator /*= Allocator( )*/ )
     : mStride( stride / static_cast< int32_t >( sizeof( PixelType ) ) )
@@ -397,8 +444,6 @@ Image< PixelType, Channels, Allocator >::Image(
     , mAllocator( allocator )
     , mMemoryHandle( other.mMemoryHandle )
 {
-    // TODO: Memory handle, use offset for roi and call getData()
-
     // Memory is organized in a monotonic buffer
     // In case of a multichannel image the data is organized as follows:
     // R G B R G B ...
@@ -413,8 +458,6 @@ Image< PixelType, Channels, Allocator >::Image(
 
     const auto offset = typeStride * top + left;
 
-    // TODO: Store offset, to be able to delete the image if we are the last
-    // user
     mData = other.mData + offset;
 }
 
@@ -513,7 +556,9 @@ Image< PixelType, Channels, Allocator >::operator( )(
     return Image( *this, roi );
 }
 
+//
 // Methods
+//
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
 constexpr int32_t Image< PixelType, Channels, Allocator >::getWidth( ) const

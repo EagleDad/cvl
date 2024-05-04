@@ -2,17 +2,18 @@
 
 // CVL includes
 #include <cvl/core/Image.h>
-#include <cvl/core/Point.h>
-#include <cvl/core/Rectangle.h>
 #include <cvl/core/RegionTraits.h>
 #include <cvl/core/Types.h>
 
 // STD includes
-#include <memory>
-#include <mutex>
 
 namespace cvl::core
 {
+
+class IRegion
+{
+    CVL_INTERFACE( IRegion );
+};
 
 /**
  * @brief The Region class
@@ -25,10 +26,12 @@ namespace cvl::core
  * region two gray values are existing.
  *
  */
-template < Arithmetic PixelType, typename Allocator,
+template < Arithmetic PixelType,
+           typename Allocator = AlignedAllocator< PixelType >,
            template < typename > typename... RegionFeature >
-class Region : public RegionFeature<
-                   Region< PixelType, Allocator, RegionFeature... > >...
+class Region
+    : public IRegion,
+      RegionFeature< Region< PixelType, Allocator, RegionFeature... > >...
 {
 public:
     using value_type = PixelType;
@@ -37,85 +40,165 @@ public:
     using const_reference_type = const PixelType&;
     using allocator_type = Allocator;
     using allocator_traits = std::allocator_traits< allocator_type >;
-
     using trait_type = RegionTypeTrait< PixelType, Allocator >;
 
-    Region( ) = delete;
+    /**
+     * Default constructor
+     */
+    Region( ) = default;
 
-    Region( const Region& other ) = delete;
+    /**
+     * Value constructor
+     *
+     * @brief The constructor creates a region with a label image and a label
+     * number.
+     *
+     * @param labelImage     The label image.
+     * @param labelNumber     The label number.
+     */
+    explicit Region( Image< PixelType, 1, Allocator > labelImage,
+                     int32_t labelNumber );
 
-    Region( Region&& other ) noexcept = delete;
+    /**
+     * Copy constructor
+     *
+     * @brief The copy constructor creates a shallow copy of the region and the
+     * underlying image. No memory is copied.
+     *
+     * @param other The region to copy from
+     */
+    Region( const Region& other );
 
-    constexpr Region& operator=( const Region& other ) noexcept = delete;
+    /**
+     * Move constructor
+     *
+     * @param [in]  other     The region to move
+     */
+    Region( Region&& other ) noexcept;
 
-    constexpr Region& operator=( Region&& other ) noexcept = delete;
+    /**
+     * Assignment operator
+     *
+     * @brief The assignment operator creates a shallow of the region. Nor
+     * memory is copied of the underlying image.
+     *
+     * @param [in]  other     The region to assign from
+     */
+    constexpr Region& operator=( const Region& other ) noexcept;
 
-    virtual ~Region( ) = default;
+    /**
+     * Move operator
+     *
+     * @param [in]  other  The region to move from
+     */
+    constexpr Region& operator=( Region&& other ) noexcept;
 
-    explicit Region(
-        std::shared_ptr< Image< PixelType, 1, Allocator > > labelImage,
-        int32_t labelNumber );
+    /**
+     * Destructor
+     */
+    ~Region( ) override = default;
 
-    explicit Region(
-        std::shared_ptr< Image< PixelType, 1, Allocator > > labelImage,
-        int32_t labelNumber, Rectangle< int32_t >&& boundingRect,
-        Point< double, 2 >&& center, int32_t area );
-
-    [[nodiscard]] constexpr int32_t getLabelNumber( ) const;
-
-    [[nodiscard]] constexpr const std::shared_ptr<
-        Image< PixelType, 1, Allocator > >&
+    /**
+     * Accessor label image
+     *
+     * @returns The The label image
+     */
+    [[nodiscard]] constexpr const Image< PixelType, 1, Allocator >&
     getLabelImage( ) const;
 
-    [[nodiscard]] constexpr Rectangle< int32_t > getBoundingRect( );
-
-    [[nodiscard]] constexpr Point< double, 2 > getCenter( );
-
-    [[nodiscard]] constexpr int32_t getArea( );
+    /**
+     * Accessor label number
+     *
+     * @returns The The label number
+     */
+    [[nodiscard]] constexpr int32_t getLabelNumber( ) const;
 
 private:
-    void calculateBasicFeatures( );
+    /**
+     * Function that swaps class members.
+     */
+    void swap( Region& other ) noexcept;
 
 private:
     int32_t mLabelNumber { };
-    Rectangle< int32_t > mBoundingRect { };
-    Point< double, 2 > mCenter { };
-    int32_t mArea { };
-    std::shared_ptr< Image< PixelType, 1, Allocator > > mLabelImage { nullptr };
-
-    std::once_flag mFlagBaseFeatures;
+    Image< PixelType, 1, Allocator > mLabelImage;
 };
 
+//
+// Public Methods
+//
+
+//
+// Construction
+//
+
 template < Arithmetic PixelType, typename Allocator,
            template < typename > typename... RegionFeature >
 Region< PixelType, Allocator, RegionFeature... >::Region(
-    std::shared_ptr< Image< PixelType, 1, Allocator > > labelImage,
-    int32_t labelNumber )
+    Image< PixelType, 1, Allocator > labelImage, int32_t labelNumber )
     : mLabelNumber( labelNumber )
     , mLabelImage( std::move( labelImage ) )
 {
-    EXPECT_MSG( mLabelImage != nullptr, "Invalid input image" );
+}
+
+template < Arithmetic PixelType, typename Allocator,
+           template < typename > typename... RegionFeature >
+Region< PixelType, Allocator, RegionFeature... >::Region( const Region& other )
+    : mLabelNumber( other.mLabelNumber )
+    , mLabelImage( other.mLabelImage )
+{
 }
 
 template < Arithmetic PixelType, typename Allocator,
            template < typename > typename... RegionFeature >
 Region< PixelType, Allocator, RegionFeature... >::Region(
-    std::shared_ptr< Image< PixelType, 1, Allocator > > labelImage,
-    int32_t labelNumber, Rectangle< int32_t >&& boundingRect,
-    Point< double, 2 >&& center, int32_t area )
-    : mLabelNumber( labelNumber )
-    , mLabelImage( std::move( labelImage ) )
+    Region&& other ) noexcept
+    : mLabelNumber( other.mLabelNumber )
+    , mLabelImage( std::move( other.mLabelImage ) )
 {
-    EXPECT_MSG( mLabelImage != nullptr, "Invalid input image" );
-
-    std::call_once( mFlagBaseFeatures,
-                    [ this, &boundingRect, &center, &area ]
-                    {
-                        mBoundingRect = std::move( boundingRect );
-                        mCenter = std::move( center );
-                        mArea = area;
-                    } );
 }
+
+//
+// Destruction
+//
+
+//
+// Operators
+//
+
+template < Arithmetic PixelType, typename Allocator,
+           template < typename > class... RegionFeature >
+constexpr Region< PixelType, Allocator, RegionFeature... >&
+Region< PixelType, Allocator, RegionFeature... >::operator=(
+    const Region& other ) noexcept
+{
+    if ( this != &other )
+    {
+        Region tmp( other );
+        tmp.swap( *this );
+    }
+
+    return *this;
+}
+
+template < Arithmetic PixelType, typename Allocator,
+           template < typename > class... RegionFeature >
+constexpr Region< PixelType, Allocator, RegionFeature... >&
+Region< PixelType, Allocator, RegionFeature... >::operator=(
+    Region&& other ) noexcept
+{
+    if ( this != &other )
+    {
+        this->mLabelNumber = other.mLabelNumber;
+        this->mLabelImage = std::move( other.mLabelImage );
+    }
+
+    return *this;
+}
+
+//
+// Methods
+//
 
 template < Arithmetic PixelType, typename Allocator,
            template < typename > class... RegionFeature >
@@ -127,135 +210,26 @@ Region< PixelType, Allocator, RegionFeature... >::getLabelNumber( ) const
 
 template < Arithmetic PixelType, typename Allocator,
            template < typename > class... RegionFeature >
-constexpr const std::shared_ptr< Image< PixelType, 1, Allocator > >&
+constexpr const Image< PixelType, 1, Allocator >&
 Region< PixelType, Allocator, RegionFeature... >::getLabelImage( ) const
 {
     return mLabelImage;
 }
 
+//
+// Private methods
+//
 template < Arithmetic PixelType, typename Allocator,
            template < typename > class... RegionFeature >
-constexpr Rectangle< int32_t >
-Region< PixelType, Allocator, RegionFeature... >::getBoundingRect( )
+void Region< PixelType, Allocator, RegionFeature... >::swap(
+    Region& other ) noexcept
 {
-    std::call_once( mFlagBaseFeatures,
-                    [ this ] { calculateBasicFeatures( ); } );
-    return mBoundingRect;
+    std::swap( this->mLabelImage, other.mLabelImage );
+    std::swap( this->mLabelNumber, other.mLabelNumber );
 }
 
-template < Arithmetic PixelType, typename Allocator,
-           template < typename > class... RegionFeature >
-constexpr Point< double, 2 >
-Region< PixelType, Allocator, RegionFeature... >::getCenter( )
-{
-    std::call_once( mFlagBaseFeatures,
-                    [ this ] { calculateBasicFeatures( ); } );
-    return mCenter;
-}
-
-template < Arithmetic PixelType, typename Allocator,
-           template < typename > class... RegionFeature >
-constexpr int32_t Region< PixelType, Allocator, RegionFeature... >::getArea( )
-{
-    std::call_once( mFlagBaseFeatures,
-                    [ this ] { calculateBasicFeatures( ); } );
-    return mArea;
-}
-
-template < Arithmetic PixelType, typename Allocator,
-           template < typename > class... RegionFeature >
-void Region< PixelType, Allocator, RegionFeature... >::calculateBasicFeatures( )
-{
-    int32_t moment00 { };
-    int32_t moment01 { };
-    int32_t moment10 { };
-    int32_t rowMin { std::numeric_limits< int32_t >::max( ) };
-    int32_t columnMin { std::numeric_limits< int32_t >::max( ) };
-    int32_t rowMax { };
-    int32_t columnMax { };
-
-    auto calculate = [ &moment00,
-                       &moment01,
-                       &moment10,
-                       &rowMin,
-                       &columnMin,
-                       &rowMax,
-                       &columnMax ]( const int32_t& y, const int32_t& x )
-    {
-        moment00++;
-        moment10 += x;
-        moment01 += y;
-
-        if ( y < rowMin )
-        {
-            rowMin = y;
-        }
-
-        if ( x < columnMin )
-        {
-            columnMin = x;
-        }
-
-        if ( y > rowMax )
-        {
-            rowMax = y;
-        }
-
-        if ( x > columnMax )
-        {
-            columnMax = x;
-        }
-    };
-
-    const auto width = mLabelImage->getWidth( );
-    const auto height = mLabelImage->getHeight( );
-
-    constexpr auto byteSize = sizeof( PixelType );
-    constexpr auto stepSize =
-        static_cast< int32_t >( sizeof( uint64_t ) / byteSize - 1 );
-
-    for ( int32_t y = 0; y < height; y++ )
-    {
-        const auto rowPtrLbl = mLabelImage->getRowPointer( y );
-
-        for ( int32_t x = 0; x < width; x++ )
-        {
-            // NOTE: For connected component labeling we do not expect all
-            // pixels to be a foreground pixel. Casting the row pointer to a
-            // 64 bit pointer and checking for 0 can improve performance for
-            // images with less information.
-
-            // Check 8 pixels at the same time
-            if ( x + stepSize < width &&
-                 ! *reinterpret_cast< const uint64_t* >( rowPtrLbl + x ) )
-            {
-                x += stepSize;
-                continue;
-            }
-
-            if ( rowPtrLbl[ x ] == mLabelNumber )
-            {
-                calculate( y, x );
-            }
-        }
-    }
-
-    mBoundingRect = { core::Point< int32_t, 2 >( columnMin, rowMin ),
-                      Size( columnMax - columnMin + 1, rowMax - rowMin + 1 ) };
-
-    mArea = moment00;
-
-    if ( moment00 > 0 )
-    {
-        mCenter = Point< double, 2 >( static_cast< double >( moment10 ) /
-                                          static_cast< double >( moment00 ),
-                                      static_cast< double >( moment01 ) /
-                                          static_cast< double >( moment00 ) );
-    }
-}
-
-using Region8U = Region< uint8_t, AlignedAllocator< uint8_t > >;
-using Region16U = Region< uint16_t, AlignedAllocator< uint16_t > >;
-using Region32S = Region< int32_t, AlignedAllocator< int32_t > >;
+using Region8U = Region< uint8_t >;
+using Region16U = Region< uint16_t >;
+using Region32S = Region< int32_t >;
 
 } // namespace cvl::core

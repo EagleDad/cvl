@@ -36,84 +36,182 @@ TYPED_TEST_SUITE(
     TestCvlCoreRegion,
     Types ); // NOLINT(clang-diagnostic-gnu-zero-variadic-macro-arguments)
 
-TYPED_TEST( TestCvlCoreRegion, ValueConstructNoThrowTyped )
+TYPED_TEST( TestCvlCoreRegion, DefaultCostruct )
 {
-    auto imgPtr = std::make_shared< Image< TypeParam, 1 > >( 512, 256, false );
+    auto region = Region< TypeParam >( );
 
-    EXPECT_NO_THROW( Region( imgPtr, TypeParam { 5 } ) );
+    EXPECT_EQ( region.getLabelNumber( ), 0 );
+
+    EXPECT_EQ( region.getLabelImage( ).getSize( ), SizeI( ) );
 }
 
-TYPED_TEST( TestCvlCoreRegion, ValueConstructThrowTyped )
+TYPED_TEST( TestCvlCoreRegion, ValueConstructLabelImageAndNumber )
 {
-    std::shared_ptr< Image< TypeParam, 1 > > imgPtr = nullptr;
+    auto image = Image< TypeParam, 1 >( 512, 256, TypeParam { 5 } );
 
-    EXPECT_THROW( Region( imgPtr, TypeParam { 5 } ), Error );
+    auto region = Region( image, TypeParam { 5 } );
+
+    EXPECT_EQ( region.getLabelNumber( ), 5 );
+
+    EXPECT_EQ( region.getLabelImage( ).getSize( ), SizeI( 512, 256 ) );
 }
 
-TYPED_TEST( TestCvlCoreRegion, ValueConstructTyped )
+TYPED_TEST( TestCvlCoreRegion, CopyCostruct )
 {
-    auto imgPtr = std::make_shared< Image< TypeParam, 1 > >( 512, 256, false );
+    constexpr int32_t width = 256;
+    constexpr int32_t stride = width * sizeof( TypeParam );
+    constexpr int32_t height = 512;
+    constexpr TypeParam value = TypeParam { 5 };
+    constexpr size_t bufferSize =
+        static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto region = Region( imgPtr, TypeParam { 5 } );
+    auto image = Image< TypeParam, 1 >( width, height, value );
 
-    ASSERT_EQ( region.getLabelNumber( ), TypeParam { 5 } );
+    Region< TypeParam > regionA( image, value );
+    Region< TypeParam > regionB( regionA );
 
-    ASSERT_EQ( region.getLabelImage( ).get( ), imgPtr.get( ) );
+    ASSERT_EQ( image.getWidth( ), regionA.getLabelImage( ).getWidth( ) );
+    ASSERT_EQ( image.getWidth( ), regionB.getLabelImage( ).getWidth( ) );
+
+    ASSERT_EQ( image.getHeight( ), regionA.getLabelImage( ).getHeight( ) );
+    ASSERT_EQ( image.getHeight( ), regionB.getLabelImage( ).getHeight( ) );
+
+    ASSERT_EQ( image.getStrideInBytes( ),
+               regionA.getLabelImage( ).getStrideInBytes( ) );
+    ASSERT_EQ( image.getStrideInBytes( ),
+               regionB.getLabelImage( ).getStrideInBytes( ) );
+
+    ASSERT_EQ( regionA.getLabelNumber( ), value );
+    ASSERT_EQ( regionB.getLabelNumber( ), value );
+
+    ASSERT_EQ( std::memcmp( image.getData( ),
+                            regionA.getLabelImage( ).getData( ),
+                            bufferSize ),
+               0 );
+
+    ASSERT_EQ( std::memcmp( image.getData( ),
+                            regionB.getLabelImage( ).getData( ),
+                            bufferSize ),
+               0 );
 }
 
-TYPED_TEST( TestCvlCoreRegion, ConnectionFilledRect )
+TYPED_TEST( TestCvlCoreRegion, MoveCostruct )
 {
-    // 0 0 0 0 0 0 0 0
-    // 0 0 0 0 0 0 0 0
-    // 0 1 1 1 1 1 1 0
-    // 0 1 1 1 1 1 1 0
-    // 0 1 1 1 1 1 1 0
-    // 0 1 1 1 1 1 1 0
-    // 0 0 0 0 0 0 0 0
-    // 0 0 0 0 0 0 0 0
+    constexpr int32_t width = 256;
+    constexpr int32_t stride = width * sizeof( TypeParam );
+    constexpr int32_t height = 512;
+    constexpr TypeParam value = TypeParam { 5 };
+    constexpr size_t bufferSize =
+        static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    constexpr auto width = 8;
-    constexpr auto height = 8;
-    constexpr auto size = width * height;
-    std::vector< uint8_t > imageDataRaw( size );
+    auto image = Image< TypeParam, 1 >( width, height, value );
 
-    imageDataRaw = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF,
-                     0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                     0xFF, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
-                     0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00,
-                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                     0x00, 0x00, 0x00, 0x00 };
+    Region< TypeParam > regionA( image, value );
+    Region< TypeParam > regionToMove( regionA );
+    Region< TypeParam > regionC( std::move( regionToMove ) );
 
-    Image< TypeParam, 1 > image( width, height, true );
+    ASSERT_EQ( image.getWidth( ), regionA.getLabelImage( ).getWidth( ) );
+    ASSERT_EQ( image.getWidth( ), regionC.getLabelImage( ).getWidth( ) );
 
-    size_t vectorIdx = 0;
-    for ( int32_t y = 0; y < image.getHeight( ); y++ )
-    {
-        for ( int32_t x = 0; x < image.getWidth( ); x++ )
-        {
-            image.at( y, x ) =
-                static_cast< TypeParam >( imageDataRaw[ vectorIdx++ ] );
-        }
-    }
+    ASSERT_EQ( image.getHeight( ), regionA.getLabelImage( ).getHeight( ) );
+    ASSERT_EQ( image.getHeight( ), regionC.getLabelImage( ).getHeight( ) );
 
-    auto imgPtr = std::make_shared< Image< TypeParam, 1 > >( image.clone( ) );
+    ASSERT_EQ( image.getStrideInBytes( ),
+               regionA.getLabelImage( ).getStrideInBytes( ) );
+    ASSERT_EQ( image.getStrideInBytes( ),
+               regionC.getLabelImage( ).getStrideInBytes( ) );
 
-    std::vector< TypeParam > imageData( size );
+    ASSERT_EQ( regionA.getLabelNumber( ), value );
+    ASSERT_EQ( regionC.getLabelNumber( ), value );
 
-    for ( size_t i = 0; i < imageDataRaw.size( ); i++ )
-    {
-        imageData[ i ] = static_cast< TypeParam >( imageDataRaw[ i ] );
-    }
+    ASSERT_EQ( std::memcmp( image.getData( ),
+                            regionA.getLabelImage( ).getData( ),
+                            bufferSize ),
+               0 );
 
-    auto region = Region( imgPtr, TypeParam { 0xFF } );
+    ASSERT_EQ( std::memcmp( image.getData( ),
+                            regionC.getLabelImage( ).getData( ),
+                            bufferSize ),
+               0 );
+}
 
-    EXPECT_EQ(
-        region.getBoundingRect( ),
-        Rectangle< int32_t >( Point< int32_t, 2 >( 1, 2 ), Size( 6, 4 ) ) );
+TYPED_TEST( TestCvlCoreRegion, AssignmentOperator )
+{
+    constexpr int32_t width = 256;
+    constexpr int32_t stride = width * sizeof( TypeParam );
+    constexpr int32_t height = 512;
+    constexpr TypeParam value = TypeParam { 5 };
+    constexpr size_t bufferSize =
+        static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    const auto cmpCenter = Point< double, 2 >( 3.5, 3.5 );
-    EXPECT_EQ( region.getCenter( ), cmpCenter );
+    auto image = Image< TypeParam, 1 >( width, height, value );
 
-    EXPECT_EQ( region.getArea( ), 24 );
+    Region< TypeParam > regionA( image, value );
+    Region< TypeParam > regionB;
+    regionB = regionA;
+
+    ASSERT_EQ( image.getWidth( ), regionA.getLabelImage( ).getWidth( ) );
+    ASSERT_EQ( image.getWidth( ), regionB.getLabelImage( ).getWidth( ) );
+
+    ASSERT_EQ( image.getHeight( ), regionA.getLabelImage( ).getHeight( ) );
+    ASSERT_EQ( image.getHeight( ), regionB.getLabelImage( ).getHeight( ) );
+
+    ASSERT_EQ( image.getStrideInBytes( ),
+               regionA.getLabelImage( ).getStrideInBytes( ) );
+    ASSERT_EQ( image.getStrideInBytes( ),
+               regionB.getLabelImage( ).getStrideInBytes( ) );
+
+    ASSERT_EQ( regionA.getLabelNumber( ), value );
+    ASSERT_EQ( regionB.getLabelNumber( ), value );
+
+    ASSERT_EQ( std::memcmp( image.getData( ),
+                            regionA.getLabelImage( ).getData( ),
+                            bufferSize ),
+               0 );
+
+    ASSERT_EQ( std::memcmp( image.getData( ),
+                            regionB.getLabelImage( ).getData( ),
+                            bufferSize ),
+               0 );
+}
+
+TYPED_TEST( TestCvlCoreRegion, MoveOperator )
+{
+    constexpr int32_t width = 256;
+    constexpr int32_t stride = width * sizeof( TypeParam );
+    constexpr int32_t height = 512;
+    constexpr TypeParam value = TypeParam { 5 };
+    constexpr size_t bufferSize =
+        static_cast< size_t >( stride ) * static_cast< size_t >( height );
+
+    auto image = Image< TypeParam, 1 >( width, height, value );
+
+    Region< TypeParam > regionA( image, value );
+    Region< TypeParam > regionToMove( regionA );
+    Region< TypeParam > regionC;
+    regionC = std::move( regionToMove );
+
+    ASSERT_EQ( image.getWidth( ), regionA.getLabelImage( ).getWidth( ) );
+    ASSERT_EQ( image.getWidth( ), regionC.getLabelImage( ).getWidth( ) );
+
+    ASSERT_EQ( image.getHeight( ), regionA.getLabelImage( ).getHeight( ) );
+    ASSERT_EQ( image.getHeight( ), regionC.getLabelImage( ).getHeight( ) );
+
+    ASSERT_EQ( image.getStrideInBytes( ),
+               regionA.getLabelImage( ).getStrideInBytes( ) );
+    ASSERT_EQ( image.getStrideInBytes( ),
+               regionC.getLabelImage( ).getStrideInBytes( ) );
+
+    ASSERT_EQ( regionA.getLabelNumber( ), value );
+    ASSERT_EQ( regionC.getLabelNumber( ), value );
+
+    ASSERT_EQ( std::memcmp( image.getData( ),
+                            regionA.getLabelImage( ).getData( ),
+                            bufferSize ),
+               0 );
+
+    ASSERT_EQ( std::memcmp( image.getData( ),
+                            regionC.getLabelImage( ).getData( ),
+                            bufferSize ),
+               0 );
 }
