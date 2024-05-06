@@ -78,11 +78,11 @@ BENCHMARK( BM_memcpy )
 static void BM_ImageCopy( benchmark::State& state )
 {
     const auto size = static_cast< int32_t >( state.range( 0 ) );
-    const Image8UC1 imgToCopy( size, size, false );
+    const Image< uint8_t, 1 > imgToCopy( size, size, false );
 
     for ( auto _ : state )
     {
-        Image8UC1 imgCopy( imgToCopy );
+        Image< uint8_t, 1 > imgCopy( imgToCopy );
     }
 
     const auto bytesProcesses = static_cast< int64_t >( state.iterations( ) ) *
@@ -107,7 +107,7 @@ static void BM_ImageCreateZeroInit( benchmark::State& state )
 
     for ( auto _ : state )
     {
-        Image8UC1 imgCopy( size, size, true );
+        Image< uint8_t, 1 > imgCopy( size, size, true );
     }
 
     state.SetComplexityN( size * size );
@@ -126,7 +126,7 @@ static void BM_ImageCreateNoZeroInit( benchmark::State& state )
 
     for ( auto _ : state )
     {
-        Image8UC1 imgCopy( size, size, false );
+        Image< uint8_t, 1 > imgCopy( size, size, false );
     }
 
     state.SetComplexityN( size * size );
@@ -147,7 +147,7 @@ BENCHMARK( BM_ImageCreateNoZeroInit )
 //
 //     for ( auto _ : state )
 //     {
-//         Image8UC1 imgCopy( size, size, val );
+//         Image< uint8_t, 1 > imgCopy( size, size, val );
 //     }
 //
 //     state.SetComplexityN( size * size );
@@ -166,11 +166,11 @@ static void BM_ImageCopyTo( benchmark::State& state )
 
     // constexpr uint8_t val = uint8_t { 128 };
 
-    const Image8UC1 image( size, size, false );
+    const Image< uint8_t, 1 > image( size, size, false );
 
     for ( auto _ : state )
     {
-        Image8UC1 imgCopy;
+        Image< uint8_t, 1 > imgCopy;
         image.copyTo( imgCopy );
     }
 
@@ -196,11 +196,11 @@ static void BM_ImageGetRoi( benchmark::State& state )
 
     // constexpr uint8_t val = uint8_t { 128 };
 
-    const Image8UC1 image( size, size, false );
+    const Image< uint8_t, 1 > image( size, size, false );
 
     for ( auto _ : state )
     {
-        const Image8UC1 imageRoi = image( roi );
+        const Image< uint8_t, 1 > imageRoi = image( roi );
     }
 
     state.SetComplexityN( width * height );
@@ -225,12 +225,12 @@ static void BM_ImageCopyRoi( benchmark::State& state )
 
     //constexpr uint8_t val = uint8_t { 128 };
 
-    const Image8UC1 image( size, size, false );
+    const Image< uint8_t, 1 > image( size, size, false );
 
     for ( auto _ : state )
     {
-        const Image8UC1 imageRoi = image( roi );
-        const Image8UC1 imageRoiCopy( imageRoi );
+        const Image< uint8_t, 1 > imageRoi = image( roi );
+        const Image< uint8_t, 1 > imageRoiCopy( imageRoi );
     }
 
     const auto bytesProcesses = static_cast< int64_t >( state.iterations( ) ) *
@@ -251,11 +251,11 @@ BENCHMARK( BM_ImageCopyRoi )
 static void BM_ImageClone( benchmark::State& state )
 {
     const auto size = static_cast< int32_t >( state.range( 0 ) );
-    const Image8UC1 imgToCopy( size, size, false );
+    const Image< uint8_t, 1 > imgToCopy( size, size, false );
 
     for ( auto _ : state )
     {
-        Image8UC1 imgCopy = imgToCopy.clone( );
+        Image< uint8_t, 1 > imgCopy = imgToCopy.clone( );
     }
 
     const auto bytesProcesses = static_cast< int64_t >( state.iterations( ) ) *

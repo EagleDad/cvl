@@ -1,4 +1,5 @@
 add_subdirectory( helloCvlCore )
+add_subdirectory( helloCvlProcessing )
 add_subdirectory( imageAllocatorComparison )
 
 if ( MSVC )

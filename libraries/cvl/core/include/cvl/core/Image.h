@@ -699,12 +699,18 @@ constexpr void Image< PixelType, Channels, Allocator >::allocate( )
     const auto elements = numberElements( );
     mData = allocator_traits::allocate( mAllocator, elements );
 
+    // Get a copy of the allocator.
+    // The object is destroyed, if the calls gets destructed and so the lambda
+    // will not work
+    auto allocator = mAllocator;
+    auto data = mData;
+
+    // Use mutable for lambda to not have the captured values const.
+    // Tha allocator cannot be const for the call
+    // https://en.cppreference.com/w/cpp/language/lambda
     mMemoryHandle = std::make_shared< Handle >(
-        [ this, elements ]
-        {
-            allocator_traits::deallocate( mAllocator, mData, elements );
-            mData = { nullptr };
-        } );
+        [ elements, allocator, data ]( ) mutable
+        { allocator_traits::deallocate( allocator, data, elements ); } );
 }
 
 template < Arithmetic PixelType, int32_t Channels, typename Allocator >
@@ -730,14 +736,5 @@ constexpr size_t Image< PixelType, Channels, Allocator >::positionOffset(
     return channelOffset + getStride( ) * static_cast< size_t >( row ) +
            static_cast< size_t >( column );
 }
-
-//
-// Type definitions
-//
-
-using Image8UC1 = Image< uint8_t, 1 >;
-using Image16SC1 = Image< int16_t, 1 >;
-using Image16UC1 = Image< uint16_t, 1 >;
-using Image32SC1 = Image< int32_t, 1 >;
 
 } // namespace cvl::core

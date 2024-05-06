@@ -1,6 +1,5 @@
 // CVL includes
-#include <cvl/core/Image.h>
-#include <cvl/core/macros.h>
+#include <Core.h>
 
 // STD includes
 #include <random>
@@ -658,7 +657,7 @@ TYPED_TEST( TestCvlCoreImage, RoiOperator )
 
 TEST( TestCvlCoreImage, CopyImageRoi )
 {
-    Image8UC1 imageOrg( 256, 256, true );
+    Image< uint8_t, 1 > imageOrg( 256, 256, true );
 
     for ( int32_t y = 64; y < 192; y++ )
     {
@@ -670,7 +669,7 @@ TEST( TestCvlCoreImage, CopyImageRoi )
 
     const Rectangle roi( Point2i { 64, 64 }, { 128, 128 } );
 
-    const Image8UC1 imageRoi = imageOrg( roi );
+    const Image< uint8_t, 1 > imageRoi = imageOrg( roi );
 
     EXPECT_EQ( imageRoi.getWidth( ), 128 );
     EXPECT_EQ( imageRoi.getHeight( ), 128 );
@@ -686,7 +685,7 @@ TEST( TestCvlCoreImage, CopyImageRoi )
         }
     }
 
-    const Image8UC1 imageRoiCopy = imageRoi.clone( );
+    const Image< uint8_t, 1 > imageRoiCopy = imageRoi.clone( );
 
     EXPECT_EQ( imageRoiCopy.getWidth( ), 128 );
     EXPECT_EQ( imageRoiCopy.getHeight( ), 128 );

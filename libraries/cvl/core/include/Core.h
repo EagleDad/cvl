@@ -1,0 +1,35 @@
+#pragma once
+
+// CVL includes
+#include <cvl/core/AccessTraits.h>
+#include <cvl/core/AlignedAllocator.h>
+#include <cvl/core/Alignment.h>
+#include <cvl/core/Compare.h>
+#include <cvl/core/ConicSection.h>
+#include <cvl/core/ConsoleLoggingBackend.h>
+#include <cvl/core/Contour.h>
+#include <cvl/core/ContourTraits.h>
+#include <cvl/core/CrtpBase.h>
+#include <cvl/core/DebugMemoryResource.h>
+#include <cvl/core/DimensionTraits.h>
+#include <cvl/core/Ellipse.h>
+#include <cvl/core/Error.h>
+#include <cvl/core/Handle.h>
+#include <cvl/core/ILogger.h>
+#include <cvl/core/Image.h>
+#include <cvl/core/ImageTraits.h>
+#include <cvl/core/Line.h>
+#include <cvl/core/NormTraits.h>
+#include <cvl/core/ObserverHandle.h>
+#include <cvl/core/Point.h>
+#include <cvl/core/Rectangle.h>
+#include <cvl/core/Region.h>
+#include <cvl/core/RegionTraits.h>
+#include <cvl/core/Size.h>
+#include <cvl/core/SpinLock.h>
+#include <cvl/core/SynchronizedQueue.h>
+#include <cvl/core/Time.h>
+#include <cvl/core/Types.h>
+#include <cvl/core/Vector.h>
+#include <cvl/core/export.h>
+#include <cvl/core/macros.h>

@@ -29,9 +29,9 @@ class IRegion
 template < Arithmetic PixelType,
            typename Allocator = AlignedAllocator< PixelType >,
            template < typename > typename... RegionFeature >
-class Region
-    : public IRegion,
-      RegionFeature< Region< PixelType, Allocator, RegionFeature... > >...
+class Region : public IRegion,
+               public RegionFeature<
+                   Region< PixelType, Allocator, RegionFeature... > >...
 {
 public:
     using value_type = PixelType;
@@ -53,11 +53,15 @@ public:
      * @brief The constructor creates a region with a label image and a label
      * number.
      *
-     * @param labelImage     The label image.
-     * @param labelNumber     The label number.
+     * @param labelImage    The label image.
+     * @param labelNumber   The label number.
+     * @param args          The arguments for the CRTP mixin classes. Order
+     *                      matters based on definition.
      */
-    explicit Region( Image< PixelType, 1, Allocator > labelImage,
-                     int32_t labelNumber );
+    explicit Region(
+        Image< PixelType, 1, Allocator > labelImage, int32_t labelNumber,
+        RegionFeature<
+            Region< PixelType, Allocator, RegionFeature... > >... args );
 
     /**
      * Copy constructor
@@ -135,8 +139,11 @@ private:
 template < Arithmetic PixelType, typename Allocator,
            template < typename > typename... RegionFeature >
 Region< PixelType, Allocator, RegionFeature... >::Region(
-    Image< PixelType, 1, Allocator > labelImage, int32_t labelNumber )
-    : mLabelNumber( labelNumber )
+    Image< PixelType, 1, Allocator > labelImage, int32_t labelNumber,
+    RegionFeature< Region< PixelType, Allocator, RegionFeature... > >... args )
+    : RegionFeature< Region< PixelType, Allocator, RegionFeature... > >(
+          args )...
+    , mLabelNumber( labelNumber )
     , mLabelImage( std::move( labelImage ) )
 {
 }
@@ -227,9 +234,5 @@ void Region< PixelType, Allocator, RegionFeature... >::swap(
     std::swap( this->mLabelImage, other.mLabelImage );
     std::swap( this->mLabelNumber, other.mLabelNumber );
 }
-
-using Region8U = Region< uint8_t >;
-using Region16U = Region< uint16_t >;
-using Region32S = Region< int32_t >;
 
 } // namespace cvl::core
