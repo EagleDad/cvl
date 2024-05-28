@@ -9,6 +9,7 @@ IGNORE_WARNINGS_POP
 
 // STD includes
 #include <random>
+#include <list>
 
 // CVL includes
 #include <cvl/core/Vector.h>
@@ -286,7 +287,7 @@ TYPED_TEST( TestCvlCoreVector, VectorFromPointTyped )
     auto data = this->getRandomValues( dimension );
 
     const Point< double, dimension > point(
-        this->getArray< dimension >( data ) );
+        this->template getArray< dimension >( data ) );
 
     const Vector< dimension > vector( point );
 
@@ -318,10 +319,10 @@ TYPED_TEST( TestCvlCoreVector, VectorFromTwoPointsTyped )
     auto data2 = this->getRandomValues( dimension );
 
     const Point< double, dimension > point1(
-        this->getArray< dimension >( data1 ) );
+        this->template getArray< dimension >( data1 ) );
 
     const Point< double, dimension > point2(
-        this->getArray< dimension >( data2 ) );
+        this->template getArray< dimension >( data2 ) );
 
     const Vector< dimension > vector( point1, point2 );
 

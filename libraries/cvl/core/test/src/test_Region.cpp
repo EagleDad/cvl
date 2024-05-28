@@ -11,6 +11,7 @@ IGNORE_WARNINGS_POP
 
 // STD includes
 #include <random>
+#include <list>
 
 //
 // Typed tests

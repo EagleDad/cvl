@@ -5,6 +5,7 @@
 IGNORE_WARNINGS_STD_PUSH
 #include <future>
 #include <thread>
+#include <list>
 IGNORE_WARNINGS_POP
 
 IGNORE_WARNINGS_GTEST_PUSH

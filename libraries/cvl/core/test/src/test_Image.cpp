@@ -160,17 +160,17 @@ TYPED_TEST( TestCvlCoreImage, ValueConstructWidthHeightStrideDataTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     ASSERT_EQ( image.getWidth( ), width );
 
@@ -182,7 +182,7 @@ TYPED_TEST( TestCvlCoreImage, ValueConstructWidthHeightStrideDataTyped )
 
     ASSERT_NE( image.getData( ), nullptr );
 
-    ASSERT_EQ( std::memcmp( image.getData( ), data.get( ), bufferSize ), 0 );
+    ASSERT_EQ( std::memcmp( image.getData( ), data.data( ), bufferSize ), 0 );
 }
 
 TYPED_TEST( TestCvlCoreImage, CopyConstructTyped )
@@ -194,17 +194,17 @@ TYPED_TEST( TestCvlCoreImage, CopyConstructTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     const Image< TypeParam, 1 > imageCopy( image );
 
@@ -235,17 +235,17 @@ TYPED_TEST( TestCvlCoreImage, MoveConstructTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     Image< TypeParam, 1 > imageToMove( image );
 
@@ -278,17 +278,17 @@ TYPED_TEST( TestCvlCoreImage, AssignmentOperatorTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     Image< TypeParam, 1 > imageAssigned { };
 
@@ -322,17 +322,17 @@ TYPED_TEST( TestCvlCoreImage, MoveOperatorTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     Image< TypeParam, 1 > imageToMove( image );
 
@@ -367,17 +367,17 @@ TYPED_TEST( TestCvlCoreImage, EqualOperatorTrueTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     const Image< TypeParam, 1 > imageCopy( image );
 
@@ -393,17 +393,17 @@ TYPED_TEST( TestCvlCoreImage, EqualOperatorFalseStrideTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     constexpr int32_t width2 = 300;
 
@@ -421,17 +421,17 @@ TYPED_TEST( TestCvlCoreImage, EqualOperatorFalseWidthTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     constexpr int32_t width2 = 300;
 
@@ -449,17 +449,17 @@ TYPED_TEST( TestCvlCoreImage, EqualOperatorFalseHeightTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     constexpr int32_t height2 = 300;
 
@@ -477,17 +477,17 @@ TYPED_TEST( TestCvlCoreImage, EqualOperatorFalseBufferTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     const Image< TypeParam, 1 > image2( width, height );
 
@@ -503,17 +503,17 @@ TYPED_TEST( TestCvlCoreImage, AccessRowPointerTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     for ( int32_t y = 0; y < height; y++ )
     {
@@ -530,17 +530,17 @@ TYPED_TEST( TestCvlCoreImage, AccessAtRefTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
     for ( int32_t y = 0; y < height; y++ )
     {
-        *( data.get( ) + y * width ) = TypeParam { 10 };
+        *( data.data( ) + y * width ) = TypeParam { 10 };
     }
 
     Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     for ( int32_t y = 0; y < height; y++ )
     {
@@ -557,11 +557,11 @@ TYPED_TEST( TestCvlCoreImage, AccessAtConstRefTyped )
     constexpr size_t bufferSize =
         static_cast< size_t >( stride ) * static_cast< size_t >( height );
 
-    auto data = std::make_shared< TypeParam[] >( bufferSize );
+    std::vector< TypeParam > data( bufferSize );
 
-    std::memset( data.get( ), 0x00, bufferSize * sizeof( TypeParam ) );
+    std::memset( data.data( ), 0x00, bufferSize * sizeof( TypeParam ) );
 
-    auto dataPtr = data.get( );
+    auto dataPtr = data.data( );
 
     for ( int32_t y = 0; y < height; y++ )
     {
@@ -569,7 +569,7 @@ TYPED_TEST( TestCvlCoreImage, AccessAtConstRefTyped )
     }
 
     const Image< TypeParam, 1 > image(
-        width, height, static_cast< void* >( data.get( ) ), stride );
+        width, height, static_cast< void* >( data.data( ) ), stride );
 
     for ( int32_t y = 0; y < height; y++ )
     {
