@@ -10,27 +10,28 @@
     #pragma warning( disable : 5039 )
     #include <Windows.h>
     #pragma warning( pop )
-#endif
 
-constexpr int16_t CONSOLE_COLOR_BLACK = 0;
-constexpr int16_t CONSOLE_COLOR_DARK_BLUE = 1;
-constexpr int16_t CONSOLE_COLOR_DARK_GREEN = 2;
-constexpr int16_t CONSOLE_COLOR_LIGHT_BLUE = 3;
-constexpr int16_t CONSOLE_COLOR_DARK_RED = 4;
-constexpr int16_t CONSOLE_COLOR_MAGENTA = 5;
-constexpr int16_t CONSOLE_COLOR_ORANGE = 6;
-constexpr int16_t CONSOLE_COLOR_LIGHT_GRAY = 7;
-constexpr int16_t CONSOLE_COLOR_GRAY = 8;
-constexpr int16_t CONSOLE_COLOR_BLUE = 9;
-constexpr int16_t CONSOLE_COLOR_GREEN = 10;
-constexpr int16_t CONSOLE_COLOR_CYAN = 11;
-constexpr int16_t CONSOLE_COLOR_RED = 12;
-constexpr int16_t CONSOLE_COLOR_PINK = 13;
-constexpr int16_t CONSOLE_COLOR_YELLOW = 14;
-constexpr int16_t CONSOLE_COLOR_WHITE = 15;
+    constexpr int16_t CONSOLE_COLOR_BLACK = 0;
+    constexpr int16_t CONSOLE_COLOR_DARK_BLUE = 1;
+    constexpr int16_t CONSOLE_COLOR_DARK_GREEN = 2;
+    constexpr int16_t CONSOLE_COLOR_LIGHT_BLUE = 3;
+    constexpr int16_t CONSOLE_COLOR_DARK_RED = 4;
+    constexpr int16_t CONSOLE_COLOR_MAGENTA = 5;
+    constexpr int16_t CONSOLE_COLOR_ORANGE = 6;
+    constexpr int16_t CONSOLE_COLOR_LIGHT_GRAY = 7;
+    constexpr int16_t CONSOLE_COLOR_GRAY = 8;
+    constexpr int16_t CONSOLE_COLOR_BLUE = 9;
+    constexpr int16_t CONSOLE_COLOR_GREEN = 10;
+    constexpr int16_t CONSOLE_COLOR_CYAN = 11;
+    constexpr int16_t CONSOLE_COLOR_RED = 12;
+    constexpr int16_t CONSOLE_COLOR_PINK = 13;
+    constexpr int16_t CONSOLE_COLOR_YELLOW = 14;
+    constexpr int16_t CONSOLE_COLOR_WHITE = 15;
+#endif
 
 namespace cvl::core
 {
+#if defined( _MSC_VER )
 void setConsoleOutputColor( const HANDLE& h, const ILogger::Severity& severity )
 {
     switch ( severity )
@@ -91,14 +92,14 @@ void setConsoleOutputColor( const HANDLE& h, const ILogger::Severity& severity )
     }
     }
 }
-
+#endif
 class ConsoleLoggingBackend::Impl
 {
 public:
     Impl( )
     {
         mLogger = getLoggerInterface( );
-
+#if defined( _MSC_VER )
         mOutputConsoleHandle = GetStdHandle( STD_OUTPUT_HANDLE );
         GetConsoleScreenBufferInfo( mOutputConsoleHandle,
                                     &mDefaultConsoleAttributes );
@@ -116,6 +117,7 @@ public:
         sbInfoEx.ColorTable[ CONSOLE_COLOR_YELLOW ] = RGB( 0xFF, 0xFF, 0x00 );
 
         SetConsoleScreenBufferInfoEx( mOutputConsoleHandle, &sbInfoEx );
+#endif        
     }
 
     ~Impl( ) = default;
@@ -125,19 +127,23 @@ public:
 
     void log( const ILogger::LogMessage& logMessage ) const
     {
+#if defined( _MSC_VER )        
         setConsoleOutputColor( mOutputConsoleHandle, logMessage.severity );
+#endif  
 
-        const auto timestamp = mLogger->getTimeStamp( logMessage.timestamp );
+        const auto timestamp = mLogger->getTimeStamp( logMessage.timestamp );      
 
         std::cout << "[" << timestamp.str( ) << "] [" << logMessage.threadId
                   << "] [" << getSeverityName( logMessage.severity ) << "]\t"
                   << logMessage.message << std::endl;
 
+#if defined( _MSC_VER )
         FlushConsoleInputBuffer( mOutputConsoleHandle );
 
         // set console back to default
         SetConsoleTextAttribute( mOutputConsoleHandle,
                                  mDefaultConsoleAttributes.wAttributes );
+#endif
     }
 
 public:
@@ -145,8 +151,10 @@ public:
     ILogger* mLogger { };
 
 private:
+#if defined( _MSC_VER )
     HANDLE mOutputConsoleHandle { };
     CONSOLE_SCREEN_BUFFER_INFO mDefaultConsoleAttributes { };
+#endif
 };
 
 ConsoleLoggingBackend::ConsoleLoggingBackend( )

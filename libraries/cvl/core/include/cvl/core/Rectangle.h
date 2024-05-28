@@ -345,19 +345,19 @@ constexpr Point< T, 2 > Rectangle< T >::getTopLeft( ) const
 template < Arithmetic T >
 constexpr Point< T, 2 > Rectangle< T >::getTopRight( ) const
 {
-    return { getRight( ), getTop( ) };
+    return Point< T, 2 >( getRight( ), getTop( ) );
 }
 
 template < Arithmetic T >
 constexpr Point< T, 2 > Rectangle< T >::getBottomLeft( ) const
 {
-    return { getLeft( ), getBottom( ) };
+    return Point< T, 2 >( getLeft( ), getBottom( ) );
 }
 
 template < Arithmetic T >
 constexpr Point< T, 2 > Rectangle< T >::getBottomRight( ) const
 {
-    return { getRight( ), getBottom( ) };
+    return Point< T, 2 >( getRight( ), getBottom( ) );
 }
 
 template < Arithmetic T >

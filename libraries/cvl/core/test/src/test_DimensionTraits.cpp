@@ -8,6 +8,7 @@ IGNORE_WARNINGS_GTEST_PUSH
 IGNORE_WARNINGS_POP
 
 // STD includes
+#include <list>
 
 // CVL includes
 #include <cvl/core/DimensionTraits.h>

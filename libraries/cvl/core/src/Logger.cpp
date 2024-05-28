@@ -82,12 +82,19 @@ std::stringstream Logger::getTimeStamp( const TimeStamp& timestamp ) const
                         .count( ) %
                     1000;
 
+#if defined( _MSC_VER )
     tm currentLocalTime { };
     const auto timeBuffer = localtime_s( &currentLocalTime, &in_time_t );
     std::ignore = timeBuffer;
 
     strTimeStamp << std::put_time( &currentLocalTime, "%Y-%m-%d %H:%M:%S." )
                  << std::setw( 3 ) << std::setfill( '0' ) << ms;
+#else
+    const auto currentLocalTime = localtime(&in_time_t );
+
+    strTimeStamp << std::put_time( currentLocalTime, "%Y-%m-%d %H:%M:%S." )
+                 << std::setw( 3 ) << std::setfill( '0' ) << ms;
+#endif
 
     return strTimeStamp;
 }

@@ -3,6 +3,7 @@
 
 // STD includes
 #include <random>
+#include <memory>
 
 // GTest includes
 IGNORE_WARNINGS_GTEST_PUSH

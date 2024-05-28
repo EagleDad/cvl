@@ -14,9 +14,9 @@ namespace cvl::core
  *
  *
  */
-#pragma warning( push )
-#pragma warning( disable : 4275 )
-#pragma warning( disable : 4251 )
+//#pragma warning( push )
+//#pragma warning( disable : 4275 )
+//#pragma warning( disable : 4251 )
 class CVL_CORE_EXPORT Error final : public std::exception
 {
 public:
@@ -65,12 +65,12 @@ public:
     /**
      * Print exception content
      */
-    [[nodiscard]] auto what( ) const -> char const* override;
+    [[nodiscard]] char const* what( ) const noexcept override;
 
 private:
     std::string mFile;
     unsigned int mLine;
     std::string mMessage;
 };
-#pragma warning( pop )
+//#pragma warning( pop )
 } // namespace cvl::core

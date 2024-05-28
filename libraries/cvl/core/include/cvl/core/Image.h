@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <cstring>
 
 // CVL includes
 #include <cvl/core/AlignedAllocator.h>

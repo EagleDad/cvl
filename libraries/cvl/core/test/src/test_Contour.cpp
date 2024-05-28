@@ -9,6 +9,7 @@ IGNORE_WARNINGS_POP
 
 // STD includes
 #include <random>
+#include <list>
 
 // CVL includes
 #include <cvl/core/Contour.h>
@@ -60,7 +61,7 @@ public:
             {
                 const auto x = static_cast< T >( distribution( gen ) );
                 const auto y = static_cast< T >( distribution( gen ) );
-                data.push_back( { x, y } );
+                data.push_back( Point< T, 2 > ( x, y ) );
             }
         }
         else
@@ -72,7 +73,7 @@ public:
             {
                 const auto x = static_cast< T >( distribution( gen ) );
                 const auto y = static_cast< T >( distribution( gen ) );
-                data.push_back( { x, y } );
+                data.push_back( Point< T, 2 > ( x, y ) );
             }
         }
 

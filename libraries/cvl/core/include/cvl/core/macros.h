@@ -5,6 +5,9 @@
 
 // STD includes
 #include <sstream>
+#include <memory>
+
+#if defined( WIN32 )
 
 #define IGNORE_WARNINGS_GTEST_PUSH                                             \
     __pragma( warning( push ) ) __pragma( warning( disable : 4389 ) )          \
@@ -28,6 +31,14 @@
                         __pragma( warning( disable : 5027 ) )
 
 #define IGNORE_WARNINGS_POP __pragma( warning( pop ) )
+
+#else
+
+#define IGNORE_WARNINGS_GTEST_PUSH
+#define IGNORE_WARNINGS_STD_PUSH 
+#define IGNORE_WARNINGS_POP 
+
+#endif
 
 #define ANONYMOUS_VARIABLE( str ) VARIABLE_MERGE( str, __LINE__ )
 #define VARIABLE_MERGE( a, b )    DO_MERGE( a, b )

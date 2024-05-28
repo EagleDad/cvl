@@ -8,6 +8,7 @@
 #include <chrono>
 #include <sstream>
 #include <thread>
+#include <memory>
 
 using Clock = std::chrono::system_clock;
 using TimeStamp = Clock::time_point;
@@ -127,3 +128,4 @@ extern ILogger* loggerInstance;
 
 #define LOG_EMERGENCY( message )                                               \
     LOG_MESSAGE( message, cvl::core::ILogger::Severity::Emergency )
+    

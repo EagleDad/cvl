@@ -46,7 +46,7 @@ auto operator<<( std::ostream& os, const Error& error ) -> std::ostream&
     return os;
 }
 
-auto Error::what( ) const -> char const*
+char const* Error::what( ) const noexcept
 {
     static thread_local std::string message;
 

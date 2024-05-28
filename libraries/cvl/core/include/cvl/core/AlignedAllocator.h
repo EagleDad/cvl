@@ -2,6 +2,7 @@
 
 // Std includes
 #include <cstddef>
+#include <type_traits>
 
 #if defined( WIN32 )
     #include <malloc.h>
@@ -79,7 +80,7 @@ public:
 #if defined( WIN32 )
             ptr = _aligned_malloc( num * sizeof( value_type ), Alignment );
 #else
-            ptr = std::aligned_alloc(1024, num * sizeof( value_type )));
+            ptr = std::aligned_alloc(1024, num * sizeof( value_type ));
 #endif
 
             return static_cast< pointer >( ptr );

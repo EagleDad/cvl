@@ -12,11 +12,41 @@
 #include "cvl/core/Compare.h"
 
 #include <algorithm>
-#include <conio.h>
+#include <list>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <random>
+
+#if defined( WIN32 )
+    #include <conio.h>
+#else
+#include <unistd.h>
+#include <termios.h>
+
+char getch(void)
+{
+    char buf = 0;
+    struct termios old = {0};
+    fflush(stdout);
+    if(tcgetattr(0, &old) < 0)
+        perror("tcsetattr()");
+    old.c_lflag &= ~ICANON;
+    old.c_lflag &= ~ECHO;
+    old.c_cc[VMIN] = 1;
+    old.c_cc[VTIME] = 0;
+    if(tcsetattr(0, TCSANOW, &old) < 0)
+        perror("tcsetattr ICANON");
+    if(read(0, &buf, 1) < 0)
+        perror("read()");
+    old.c_lflag |= ICANON;
+    old.c_lflag |= ECHO;
+    if(tcsetattr(0, TCSADRAIN, &old) < 0)
+        perror("tcsetattr ~ICANON");
+    printf("%c\n", buf);
+    return buf;
+ }
+#endif
 
 #if defined( BUILD_WITH_TBB )
 
@@ -185,7 +215,7 @@ void threadFunc( ThreadData* data )
                 }
             } );
 
-        resultFile << getTimeStamp( ).str( ) << ';' << elapsedTime << '\n';
+        resultFile << getTimeStamp( ).str( ) << ';' << elapsedTime.count() << '\n';
 
         resultFile.flush( );
 
@@ -408,7 +438,11 @@ int32_t main( [[maybe_unused]] int32_t argc, [[maybe_unused]] char** argv )
 
     while ( key != 32 )
     {
+#if defined( WIN32 )        
         key = _getch( );
+#else
+        key = getch( );
+#endif
 
         if ( key == 'c' )
         {

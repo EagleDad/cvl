@@ -4,6 +4,7 @@
 
 // STD includes
 #include <random>
+#include <list>
 
 // GTest includes
 IGNORE_WARNINGS_GTEST_PUSH

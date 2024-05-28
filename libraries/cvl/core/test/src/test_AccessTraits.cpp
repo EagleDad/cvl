@@ -1,3 +1,5 @@
+// CVL includes
+#include <cvl/core/AccessTraits.h>
 #include <cvl/core/macros.h>
 
 // GTest includes
@@ -9,9 +11,8 @@ IGNORE_WARNINGS_POP
 
 // STD includes
 #include <random>
+#include <list>
 
-// CVL includes
-#include <cvl/core/AccessTraits.h>
 
 //
 // Typed tests
