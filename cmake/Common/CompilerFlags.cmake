@@ -6,9 +6,9 @@
 #   THIRD_PARTY - Used, when 3rd party modules are involved
 function( set_compiler_warning_flags )
 
-	if(NOT CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-		message(FATAL_ERROR "Unsupported compiler")
-	endif()
+	#if(NOT CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+	#	message(FATAL_ERROR "Unsupported compiler")
+	#endif()
 
 	cmake_parse_arguments(
         pargs 
