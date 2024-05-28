@@ -7,7 +7,7 @@ add_gtest_executable(
     HEADERS
 
     SOURCES
-        src/test_threshold.cpp
+        src/test_Threshold.cpp
 
     DEPENDENCIES
         CVL::Core

@@ -48,7 +48,7 @@ target_include_directories ( ${LIBRARY_NAME_RAW}
 
 install (
     FILES ${CMAKE_CURRENT_BINARY_DIR}/include/cvl/processing/export.h 
-    DESTINATION "include/cvl/core"
+    DESTINATION "include/cvl/processing"
 )
 
 target_link_libraries( ${LIBRARY_NAME_RAW}
@@ -58,7 +58,7 @@ target_link_libraries( ${LIBRARY_NAME_RAW}
 
 if( BUILD_TESTING )
     # Build unit tests only if testing is enabled
-    #add_subdirectory( test )
+    add_subdirectory( test )
 endif( BUILD_TESTING )
 
 if( BUILD_BENCHMARK )

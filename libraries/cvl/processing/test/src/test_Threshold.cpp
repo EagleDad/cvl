@@ -9,6 +9,7 @@ IGNORE_WARNINGS_POP
 
 // STD includes
 #include <random>
+#include <list>
 
 // CVL includes
 #include <cvl/processing/Threshold.h>
