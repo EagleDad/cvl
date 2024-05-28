@@ -8,6 +8,7 @@ add_library( ${LIBRARY_NAME_RAW} SHARED
     include/cvl/core/AccessTraits.h
     include/cvl/core/AlignedAllocator.h
     include/cvl/core/Alignment.h
+    include/cvl/core/CallOnce.h
     include/cvl/core/Compare.h
     include/cvl/core/ConicSection.h
     include/cvl/core/ConsoleLoggingBackend.h

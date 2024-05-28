@@ -29,9 +29,9 @@ class IRegion
 template < Arithmetic PixelType,
            typename Allocator = AlignedAllocator< PixelType >,
            template < typename > typename... RegionFeature >
-class Region : public IRegion,
-               public RegionFeature<
-                   Region< PixelType, Allocator, RegionFeature... > >...
+class Region final : public IRegion,
+                     public RegionFeature<
+                         Region< PixelType, Allocator, RegionFeature... > >...
 {
 public:
     using value_type = PixelType;
@@ -58,10 +58,8 @@ public:
      * @param args          The arguments for the CRTP mixin classes. Order
      *                      matters based on definition.
      */
-    explicit Region(
-        Image< PixelType, 1, Allocator > labelImage, int32_t labelNumber,
-        RegionFeature<
-            Region< PixelType, Allocator, RegionFeature... > >... args );
+    explicit Region( Image< PixelType, 1, Allocator > labelImage,
+                     int32_t labelNumber, RegionFeature< Region >... args );
 
     /**
      * Copy constructor
@@ -140,9 +138,8 @@ template < Arithmetic PixelType, typename Allocator,
            template < typename > typename... RegionFeature >
 Region< PixelType, Allocator, RegionFeature... >::Region(
     Image< PixelType, 1, Allocator > labelImage, int32_t labelNumber,
-    RegionFeature< Region< PixelType, Allocator, RegionFeature... > >... args )
-    : RegionFeature< Region< PixelType, Allocator, RegionFeature... > >(
-          args )...
+    RegionFeature< Region >... args )
+    : RegionFeature< Region >( args )...
     , mLabelNumber( labelNumber )
     , mLabelImage( std::move( labelImage ) )
 {

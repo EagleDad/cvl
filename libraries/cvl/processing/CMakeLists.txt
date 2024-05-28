@@ -5,6 +5,7 @@ add_library( ${LIBRARY_NAME_RAW} SHARED
     
     include/Processing.h
 
+    include/cvl/processing/Area.h
     include/cvl/processing/Test.h
     include/cvl/processing/Threshold.h
 

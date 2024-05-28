@@ -7,6 +7,7 @@ add_gtest_executable(
     HEADERS
 
     SOURCES
+        src/test_Area.cpp
         src/test_Threshold.cpp
 
     DEPENDENCIES

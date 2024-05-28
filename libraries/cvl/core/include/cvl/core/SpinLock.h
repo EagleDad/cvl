@@ -59,14 +59,4 @@ private:
     SpinLock& mSpinLock;
 };
 
-template < class Callable, class... Args >
-void call_once( bool& flag, Callable&& f, Args&&... args )
-{
-    if ( ! flag )
-    {
-        f( std::forward< decltype( args ) >( args )... );
-        flag = true;
-    }
-}
-
 } // namespace cvl::core

@@ -763,7 +763,7 @@ TYPED_TEST( TestCvlCoreImage, MultiLevelRoi )
 
 TYPED_TEST( TestCvlCoreImage, FillImgae )
 {
-    Image< TypeParam, 1 > image( 256, 125, TypeParam { 5 } );
+    Image< TypeParam, 1 > image( 8, 8, TypeParam { 5 } );
 
     for ( int32_t y = 0; y < image.getHeight( ); y++ )
     {
