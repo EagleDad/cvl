@@ -33,6 +33,10 @@ endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
 
 function( add_version_information )
 
+    if(NOT CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+		return ()
+	endif()
+
     set(options)
     set(oneValueArgs TARGET )
     set(multiValueArgs)

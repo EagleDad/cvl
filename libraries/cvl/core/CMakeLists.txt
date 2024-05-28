@@ -129,8 +129,12 @@ install(
     RUNTIME  DESTINATION bin
 )
 
-install(
-    FILES $<TARGET_PDB_FILE:${LIBRARY_NAME_RAW}> 
-    DESTINATION bin
-    OPTIONAL
-)
+if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+	
+    install(
+        FILES $<TARGET_PDB_FILE:${LIBRARY_NAME_RAW}> 
+        DESTINATION bin
+        OPTIONAL
+    )
+
+endif()

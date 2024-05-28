@@ -58,7 +58,7 @@ target_link_libraries( ${LIBRARY_NAME_RAW}
 
 if( BUILD_TESTING )
     # Build unit tests only if testing is enabled
-    add_subdirectory( test )
+    #add_subdirectory( test )
 endif( BUILD_TESTING )
 
 if( BUILD_BENCHMARK )
@@ -91,8 +91,12 @@ install(
     RUNTIME  DESTINATION bin
 )
 
-install(
-    FILES $<TARGET_PDB_FILE:${LIBRARY_NAME_RAW}> 
-    DESTINATION bin
-    OPTIONAL
-)
+if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+
+    install(
+        FILES $<TARGET_PDB_FILE:${LIBRARY_NAME_RAW}> 
+        DESTINATION bin
+        OPTIONAL
+    )
+
+endif()

@@ -1,7 +1,5 @@
 set(EXECUTABLE_NAME "helloCvlCore")
 
-find_package( TBB REQUIRED )
-
 add_executable(${EXECUTABLE_NAME}
     main.cpp
 )
@@ -25,9 +23,6 @@ target_include_directories(${EXECUTABLE_NAME}
 target_link_libraries(${EXECUTABLE_NAME}
     PUBLIC
         CVL::Core
-        TBB::tbb
-        TBB::tbbmalloc
-        TBB::tbbmalloc_proxy
 
     PRIVATE
 

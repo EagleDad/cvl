@@ -1,6 +1,6 @@
 set( EXECUTABLE_NAME "imageAllocatorComparison" )
 
-find_package( TBB )
+find_package( TBB QUIET )
 
 add_executable( ${EXECUTABLE_NAME}
     main.cpp
