@@ -55,11 +55,23 @@ public:
      *
      * @param labelImage    The label image.
      * @param labelNumber   The label number.
+     */
+    explicit Region( Image< PixelType, 1, Allocator > labelImage,
+                     int32_t labelNumber );
+
+    /**
+     * Value constructor
+     *
+     * @brief The constructor creates a region with a label image and a label
+     * number.
+     *
+     * @param labelImage    The label image.
+     * @param labelNumber   The label number.
      * @param args          The arguments for the CRTP mixin classes. Order
      *                      matters based on definition.
      */
-    explicit Region( Image< PixelType, 1, Allocator > labelImage,
-                     int32_t labelNumber, RegionFeature< Region >... args );
+    /*explicit Region( Image< PixelType, 1, Allocator > labelImage,
+                     int32_t labelNumber, RegionFeature< Region >... args );*/
 
     /**
      * Copy constructor
@@ -137,13 +149,22 @@ private:
 template < Arithmetic PixelType, typename Allocator,
            template < typename > typename... RegionFeature >
 Region< PixelType, Allocator, RegionFeature... >::Region(
-    Image< PixelType, 1, Allocator > labelImage, int32_t labelNumber,
-    RegionFeature< Region >... args )
-    : RegionFeature< Region >( args )...
-    , mLabelNumber( labelNumber )
+    Image< PixelType, 1, Allocator > labelImage, int32_t labelNumber )
+    : mLabelNumber( labelNumber )
     , mLabelImage( std::move( labelImage ) )
 {
 }
+
+// template < Arithmetic PixelType, typename Allocator,
+//            template < typename > typename... RegionFeature >
+// Region< PixelType, Allocator, RegionFeature... >::Region(
+//     Image< PixelType, 1, Allocator > labelImage, int32_t labelNumber,
+//     RegionFeature< Region >... args )
+//     : RegionFeature< Region >( args )...
+//     , mLabelNumber( labelNumber )
+//     , mLabelImage( std::move( labelImage ) )
+//{
+// }
 
 template < Arithmetic PixelType, typename Allocator,
            template < typename > typename... RegionFeature >

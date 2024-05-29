@@ -20,7 +20,7 @@ public:
     Area& operator=( Area&& other ) noexcept = default;
     ~Area( ) = default;
 
-    Area( double area ) noexcept;
+    //Area( double area ) noexcept;
 
     [[nodiscard]] double getArea( );
 
@@ -32,11 +32,11 @@ private:
     bool mCalculated { false };
 };
 
-template < typename Derived >
-Area< Derived >::Area( double area ) noexcept
-    : mArea( area )
-{
-}
+//template < typename Derived >
+//Area< Derived >::Area( double area ) noexcept
+//    : mArea( area )
+//{
+//}
 
 template < typename Derived >
 double Area< Derived >::getArea( )

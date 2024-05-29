@@ -8,11 +8,14 @@ add_gtest_executable(
 
     SOURCES
         src/test_Area.cpp
+        src/test_BoundingBox.cpp
+        src/test_Center.cpp
+        src/test_ConnectedComponents.cpp
         src/test_Threshold.cpp
 
     DEPENDENCIES
         CVL::Core
-		CVL::Processing
+        CVL::Processing
 )
 
 if ( MSVC )

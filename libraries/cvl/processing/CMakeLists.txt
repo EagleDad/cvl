@@ -3,13 +3,16 @@ get_raw_target_name( ${LIBRARY_NAME} LIBRARY_NAME_RAW )
 
 add_library( ${LIBRARY_NAME_RAW} SHARED
     
+    include/cvl/processing/Test.h
+    src/Test.cpp
+
     include/Processing.h
 
     include/cvl/processing/Area.h
-    include/cvl/processing/Test.h
+    include/cvl/processing/BoundingBox.h
+    include/cvl/processing/Center.h
+    include/cvl/processing/ConnectedComponents.h
     include/cvl/processing/Threshold.h
-
-    src/Test.cpp
 )
 
 add_library( ${LIBRARY_NAME} ALIAS ${LIBRARY_NAME_RAW} )
