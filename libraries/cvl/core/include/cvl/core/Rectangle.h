@@ -369,8 +369,7 @@ constexpr T Rectangle< T >::getLeft( ) const
 template < Arithmetic T >
 constexpr T Rectangle< T >::getRight( ) const
 {
-    const auto offsetX = mSize.getWidth( ) > 0 ? mSize.getWidth( ) - 1 : 0;
-    return static_cast< T >( mTopLeft.getX( ) + offsetX );
+    return static_cast< T >( mTopLeft.getX( ) + mSize.getWidth( ) );
 }
 
 template < Arithmetic T >
@@ -382,8 +381,7 @@ constexpr T Rectangle< T >::getTop( ) const
 template < Arithmetic T >
 constexpr T Rectangle< T >::getBottom( ) const
 {
-    const auto offsetY = mSize.getHeight( ) > 0 ? mSize.getHeight( ) - 1 : 0;
-    return static_cast< T >( mTopLeft.getY( ) + offsetY );
+    return static_cast< T >( mTopLeft.getY( ) + mSize.getHeight( ) );
 }
 
 template < Arithmetic T >

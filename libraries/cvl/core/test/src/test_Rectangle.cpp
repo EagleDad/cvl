@@ -8,8 +8,8 @@ IGNORE_WARNINGS_GTEST_PUSH
 IGNORE_WARNINGS_POP
 
 // STD includes
-#include <random>
 #include <list>
+#include <random>
 
 // CVL includes
 #include <cvl/core/Rectangle.h>
@@ -104,10 +104,10 @@ TYPED_TEST( TestCvlCoreRectangle, ValueConstructTyped )
         Point< TypeParam, 2 > tl( x, y );
         Size< TypeParam > size( w, h );
 
-        Point< TypeParam, 2 > tr( static_cast< TypeParam >( x + w - 1 ), y );
-        Point< TypeParam, 2 > br( static_cast< TypeParam >( x + w - 1 ),
-                                  static_cast< TypeParam >( y + h - 1 ) );
-        Point< TypeParam, 2 > bl( x, static_cast< TypeParam >( y + h - 1 ) );
+        Point< TypeParam, 2 > tr( static_cast< TypeParam >( x + w ), y );
+        Point< TypeParam, 2 > br( static_cast< TypeParam >( x + w ),
+                                  static_cast< TypeParam >( y + h ) );
+        Point< TypeParam, 2 > bl( x, static_cast< TypeParam >( y + h ) );
 
         Rectangle< TypeParam > rect( tl, size );
 
@@ -301,195 +301,195 @@ TYPED_TEST( TestCvlCoreRectangle, NotEqualOperatorTyped )
     ASSERT_NE( rect1, rect2 );
 }
 
-//TYPED_TEST( TestCvlCoreRectangle, AddOperatorNewObjectTyped )
+// TYPED_TEST( TestCvlCoreRectangle, AddOperatorNewObjectTyped )
 //{
-//    const auto x1 = this->getRandomValue( );
-//    const auto y1 = this->getRandomValue( );
-//    const auto w1 = this->getRandomValue( );
-//    const auto h1 = this->getRandomValue( );
+//     const auto x1 = this->getRandomValue( );
+//     const auto y1 = this->getRandomValue( );
+//     const auto w1 = this->getRandomValue( );
+//     const auto h1 = this->getRandomValue( );
 //
-//    const auto x2 = this->getRandomValue( );
-//    const auto y2 = this->getRandomValue( );
-//    const auto w2 = this->getRandomValue( );
-//    const auto h2 = this->getRandomValue( );
+//     const auto x2 = this->getRandomValue( );
+//     const auto y2 = this->getRandomValue( );
+//     const auto w2 = this->getRandomValue( );
+//     const auto h2 = this->getRandomValue( );
 //
-//    Point< TypeParam, 2 > tl1( x1, y1 );
-//    Size< TypeParam > size1( w1, h1 );
+//     Point< TypeParam, 2 > tl1( x1, y1 );
+//     Size< TypeParam > size1( w1, h1 );
 //
-//    Point< TypeParam, 2 > tl2( x2, y2 );
-//    Size< TypeParam > size2( w2, h2 );
+//     Point< TypeParam, 2 > tl2( x2, y2 );
+//     Size< TypeParam > size2( w2, h2 );
 //
-//    const Rectangle< TypeParam > rect1( tl1, size1 );
-//    const Rectangle< TypeParam > rect2( tl2, size2 );
+//     const Rectangle< TypeParam > rect1( tl1, size1 );
+//     const Rectangle< TypeParam > rect2( tl2, size2 );
 //
-//    const auto rectAdded = rect1 + rect2;
+//     const auto rectAdded = rect1 + rect2;
 //
-//    ASSERT_EQ( rectAdded.getWidth( ), static_cast< TypeParam >( w1 + w2 ) );
-//    ASSERT_EQ( rectAdded.getHeight( ), static_cast< TypeParam >( h1 + h2 ) );
-//    ASSERT_EQ( rectAdded.getTopLeft( ).getX( ),
-//               static_cast< TypeParam >( x1 + x2 ) );
-//    ASSERT_EQ( rectAdded.getTopLeft( ).getY( ),
-//               static_cast< TypeParam >( y1 + y2 ) );
-//}
+//     ASSERT_EQ( rectAdded.getWidth( ), static_cast< TypeParam >( w1 + w2 ) );
+//     ASSERT_EQ( rectAdded.getHeight( ), static_cast< TypeParam >( h1 + h2 ) );
+//     ASSERT_EQ( rectAdded.getTopLeft( ).getX( ),
+//                static_cast< TypeParam >( x1 + x2 ) );
+//     ASSERT_EQ( rectAdded.getTopLeft( ).getY( ),
+//                static_cast< TypeParam >( y1 + y2 ) );
+// }
 
-//TEST( TestCvlCoreRectangle, OperatorAddNewRect )
+// TEST( TestCvlCoreRectangle, OperatorAddNewRect )
 //{
-//    constexpr int32_t x1 = 50;
-//    constexpr int32_t y1 = 100;
+//     constexpr int32_t x1 = 50;
+//     constexpr int32_t y1 = 100;
 //
-//    constexpr double x2 = 50.5;
-//    constexpr double y2 = 100.25;
+//     constexpr double x2 = 50.5;
+//     constexpr double y2 = 100.25;
 //
-//    const Point2i tl1( x1, y1 );
-//    const Point2d tl2( x2, y2 );
+//     const Point2i tl1( x1, y1 );
+//     const Point2d tl2( x2, y2 );
 //
-//    constexpr int32_t w1 = 300;
-//    constexpr int32_t h1 = 600;
+//     constexpr int32_t w1 = 300;
+//     constexpr int32_t h1 = 600;
 //
-//    constexpr double w2 = 50.75;
-//    constexpr double h2 = 100.25;
+//     constexpr double w2 = 50.75;
+//     constexpr double h2 = 100.25;
 //
-//    const Size< int32_t > size1( w1, h1 );
-//    const Size< double > size2( w2, h2 );
+//     const Size< int32_t > size1( w1, h1 );
+//     const Size< double > size2( w2, h2 );
 //
-//    const Rectangle rect1( tl1, size1 );
-//    const Rectangle rect2( tl2, size2 );
+//     const Rectangle rect1( tl1, size1 );
+//     const Rectangle rect2( tl2, size2 );
 //
-//    const auto rectAdded = rect1 + rect2;
+//     const auto rectAdded = rect1 + rect2;
 //
-//    ASSERT_EQ( rectAdded.getWidth( ), static_cast< double >( w1 + w2 ) );
-//    ASSERT_EQ( rectAdded.getHeight( ), static_cast< double >( h1 + h2 ) );
-//    ASSERT_EQ( rectAdded.getTopLeft( ).getX( ),
-//               static_cast< double >( x1 + x2 ) );
-//    ASSERT_EQ( rectAdded.getTopLeft( ).getY( ),
-//               static_cast< double >( y1 + y2 ) );
-//}
+//     ASSERT_EQ( rectAdded.getWidth( ), static_cast< double >( w1 + w2 ) );
+//     ASSERT_EQ( rectAdded.getHeight( ), static_cast< double >( h1 + h2 ) );
+//     ASSERT_EQ( rectAdded.getTopLeft( ).getX( ),
+//                static_cast< double >( x1 + x2 ) );
+//     ASSERT_EQ( rectAdded.getTopLeft( ).getY( ),
+//                static_cast< double >( y1 + y2 ) );
+// }
 
-//TYPED_TEST( TestCvlCoreRectangle, AddAssignOperatorTyped )
+// TYPED_TEST( TestCvlCoreRectangle, AddAssignOperatorTyped )
 //{
-//    const auto x1 = this->getRandomValue( );
-//    const auto y1 = this->getRandomValue( );
-//    const auto w1 = this->getRandomValue( );
-//    const auto h1 = this->getRandomValue( );
+//     const auto x1 = this->getRandomValue( );
+//     const auto y1 = this->getRandomValue( );
+//     const auto w1 = this->getRandomValue( );
+//     const auto h1 = this->getRandomValue( );
 //
-//    const auto x2 = this->getRandomValue( );
-//    const auto y2 = this->getRandomValue( );
-//    const auto w2 = this->getRandomValue( );
-//    const auto h2 = this->getRandomValue( );
+//     const auto x2 = this->getRandomValue( );
+//     const auto y2 = this->getRandomValue( );
+//     const auto w2 = this->getRandomValue( );
+//     const auto h2 = this->getRandomValue( );
 //
-//    Point< TypeParam, 2 > tl1( x1, y1 );
-//    Size< TypeParam > size1( w1, h1 );
+//     Point< TypeParam, 2 > tl1( x1, y1 );
+//     Size< TypeParam > size1( w1, h1 );
 //
-//    Point< TypeParam, 2 > tl2( x2, y2 );
-//    Size< TypeParam > size2( w2, h2 );
+//     Point< TypeParam, 2 > tl2( x2, y2 );
+//     Size< TypeParam > size2( w2, h2 );
 //
-//    Rectangle< TypeParam > rect1( tl1, size1 );
-//    const Rectangle< TypeParam > rect2( tl2, size2 );
+//     Rectangle< TypeParam > rect1( tl1, size1 );
+//     const Rectangle< TypeParam > rect2( tl2, size2 );
 //
-//    rect1 += rect2;
+//     rect1 += rect2;
 //
-//    ASSERT_EQ( rect1.getWidth( ), static_cast< TypeParam >( w1 + w2 ) );
-//    ASSERT_EQ( rect1.getHeight( ), static_cast< TypeParam >( h1 + h2 ) );
-//    ASSERT_EQ( rect1.getTopLeft( ).getX( ),
-//               static_cast< TypeParam >( x1 + x2 ) );
-//    ASSERT_EQ( rect1.getTopLeft( ).getY( ),
-//               static_cast< TypeParam >( y1 + y2 ) );
-//}
+//     ASSERT_EQ( rect1.getWidth( ), static_cast< TypeParam >( w1 + w2 ) );
+//     ASSERT_EQ( rect1.getHeight( ), static_cast< TypeParam >( h1 + h2 ) );
+//     ASSERT_EQ( rect1.getTopLeft( ).getX( ),
+//                static_cast< TypeParam >( x1 + x2 ) );
+//     ASSERT_EQ( rect1.getTopLeft( ).getY( ),
+//                static_cast< TypeParam >( y1 + y2 ) );
+// }
 
-//TYPED_TEST( TestCvlCoreRectangle, SubtractOperatorNewObjectTyped )
+// TYPED_TEST( TestCvlCoreRectangle, SubtractOperatorNewObjectTyped )
 //{
-//    const auto x1 = this->getRandomValue( );
-//    const auto y1 = this->getRandomValue( );
-//    const auto w1 = this->getRandomValue( );
-//    const auto h1 = this->getRandomValue( );
+//     const auto x1 = this->getRandomValue( );
+//     const auto y1 = this->getRandomValue( );
+//     const auto w1 = this->getRandomValue( );
+//     const auto h1 = this->getRandomValue( );
 //
-//    const auto x2 = this->getRandomValue( );
-//    const auto y2 = this->getRandomValue( );
-//    const auto w2 = this->getRandomValue( );
-//    const auto h2 = this->getRandomValue( );
+//     const auto x2 = this->getRandomValue( );
+//     const auto y2 = this->getRandomValue( );
+//     const auto w2 = this->getRandomValue( );
+//     const auto h2 = this->getRandomValue( );
 //
-//    Point< TypeParam, 2 > tl1( x1, y1 );
-//    Size< TypeParam > size1( w1, h1 );
+//     Point< TypeParam, 2 > tl1( x1, y1 );
+//     Size< TypeParam > size1( w1, h1 );
 //
-//    Point< TypeParam, 2 > tl2( x2, y2 );
-//    Size< TypeParam > size2( w2, h2 );
+//     Point< TypeParam, 2 > tl2( x2, y2 );
+//     Size< TypeParam > size2( w2, h2 );
 //
-//    const Rectangle< TypeParam > rect1( tl1, size1 );
-//    const Rectangle< TypeParam > rect2( tl2, size2 );
+//     const Rectangle< TypeParam > rect1( tl1, size1 );
+//     const Rectangle< TypeParam > rect2( tl2, size2 );
 //
-//    const auto rectSub = rect1 - rect2;
+//     const auto rectSub = rect1 - rect2;
 //
-//    ASSERT_EQ( rectSub.getWidth( ), static_cast< TypeParam >( w1 - w2 ) );
-//    ASSERT_EQ( rectSub.getHeight( ), static_cast< TypeParam >( h1 - h2 ) );
-//    ASSERT_EQ( rectSub.getTopLeft( ).getX( ),
-//               static_cast< TypeParam >( x1 - x2 ) );
-//    ASSERT_EQ( rectSub.getTopLeft( ).getY( ),
-//               static_cast< TypeParam >( y1 - y2 ) );
-//}
+//     ASSERT_EQ( rectSub.getWidth( ), static_cast< TypeParam >( w1 - w2 ) );
+//     ASSERT_EQ( rectSub.getHeight( ), static_cast< TypeParam >( h1 - h2 ) );
+//     ASSERT_EQ( rectSub.getTopLeft( ).getX( ),
+//                static_cast< TypeParam >( x1 - x2 ) );
+//     ASSERT_EQ( rectSub.getTopLeft( ).getY( ),
+//                static_cast< TypeParam >( y1 - y2 ) );
+// }
 
-//TEST( TestCvlCoreRectangle, OperatorSubtractNewRect )
+// TEST( TestCvlCoreRectangle, OperatorSubtractNewRect )
 //{
-//    constexpr int32_t x1 = 50;
-//    constexpr int32_t y1 = 100;
+//     constexpr int32_t x1 = 50;
+//     constexpr int32_t y1 = 100;
 //
-//    constexpr double x2 = 50.5;
-//    constexpr double y2 = 100.25;
+//     constexpr double x2 = 50.5;
+//     constexpr double y2 = 100.25;
 //
-//    const Point2i tl1( x1, y1 );
-//    const Point2d tl2( x2, y2 );
+//     const Point2i tl1( x1, y1 );
+//     const Point2d tl2( x2, y2 );
 //
-//    constexpr int32_t w1 = 300;
-//    constexpr int32_t h1 = 600;
+//     constexpr int32_t w1 = 300;
+//     constexpr int32_t h1 = 600;
 //
-//    constexpr double w2 = 50.75;
-//    constexpr double h2 = 100.25;
+//     constexpr double w2 = 50.75;
+//     constexpr double h2 = 100.25;
 //
-//    const Size< int32_t > size1( w1, h1 );
-//    const Size< double > size2( w2, h2 );
+//     const Size< int32_t > size1( w1, h1 );
+//     const Size< double > size2( w2, h2 );
 //
-//    const Rectangle rect1( tl1, size1 );
-//    const Rectangle rect2( tl2, size2 );
+//     const Rectangle rect1( tl1, size1 );
+//     const Rectangle rect2( tl2, size2 );
 //
-//    const auto rectSub = rect1 - rect2;
+//     const auto rectSub = rect1 - rect2;
 //
-//    ASSERT_EQ( rectSub.getWidth( ), static_cast< double >( w1 - w2 ) );
-//    ASSERT_EQ( rectSub.getHeight( ), static_cast< double >( h1 - h2 ) );
-//    ASSERT_EQ( rectSub.getTopLeft( ).getX( ),
-//               static_cast< double >( x1 - x2 ) );
-//    ASSERT_EQ( rectSub.getTopLeft( ).getY( ),
-//               static_cast< double >( y1 - y2 ) );
-//}
+//     ASSERT_EQ( rectSub.getWidth( ), static_cast< double >( w1 - w2 ) );
+//     ASSERT_EQ( rectSub.getHeight( ), static_cast< double >( h1 - h2 ) );
+//     ASSERT_EQ( rectSub.getTopLeft( ).getX( ),
+//                static_cast< double >( x1 - x2 ) );
+//     ASSERT_EQ( rectSub.getTopLeft( ).getY( ),
+//                static_cast< double >( y1 - y2 ) );
+// }
 
-//TYPED_TEST( TestCvlCoreRectangle, SubtractAssignOperatorTyped )
+// TYPED_TEST( TestCvlCoreRectangle, SubtractAssignOperatorTyped )
 //{
-//    const auto x1 = this->getRandomValue( );
-//    const auto y1 = this->getRandomValue( );
-//    const auto w1 = this->getRandomValue( );
-//    const auto h1 = this->getRandomValue( );
+//     const auto x1 = this->getRandomValue( );
+//     const auto y1 = this->getRandomValue( );
+//     const auto w1 = this->getRandomValue( );
+//     const auto h1 = this->getRandomValue( );
 //
-//    const auto x2 = this->getRandomValue( );
-//    const auto y2 = this->getRandomValue( );
-//    const auto w2 = this->getRandomValue( );
-//    const auto h2 = this->getRandomValue( );
+//     const auto x2 = this->getRandomValue( );
+//     const auto y2 = this->getRandomValue( );
+//     const auto w2 = this->getRandomValue( );
+//     const auto h2 = this->getRandomValue( );
 //
-//    Point< TypeParam, 2 > tl1( x1, y1 );
-//    Size< TypeParam > size1( w1, h1 );
+//     Point< TypeParam, 2 > tl1( x1, y1 );
+//     Size< TypeParam > size1( w1, h1 );
 //
-//    Point< TypeParam, 2 > tl2( x2, y2 );
-//    Size< TypeParam > size2( w2, h2 );
+//     Point< TypeParam, 2 > tl2( x2, y2 );
+//     Size< TypeParam > size2( w2, h2 );
 //
-//    Rectangle< TypeParam > rect1( tl1, size1 );
-//    const Rectangle< TypeParam > rect2( tl2, size2 );
+//     Rectangle< TypeParam > rect1( tl1, size1 );
+//     const Rectangle< TypeParam > rect2( tl2, size2 );
 //
-//    rect1 -= rect2;
+//     rect1 -= rect2;
 //
-//    ASSERT_EQ( rect1.getWidth( ), static_cast< TypeParam >( w1 - w2 ) );
-//    ASSERT_EQ( rect1.getHeight( ), static_cast< TypeParam >( h1 - h2 ) );
-//    ASSERT_EQ( rect1.getTopLeft( ).getX( ),
-//               static_cast< TypeParam >( x1 - x2 ) );
-//    ASSERT_EQ( rect1.getTopLeft( ).getY( ),
-//               static_cast< TypeParam >( y1 - y2 ) );
-//}
+//     ASSERT_EQ( rect1.getWidth( ), static_cast< TypeParam >( w1 - w2 ) );
+//     ASSERT_EQ( rect1.getHeight( ), static_cast< TypeParam >( h1 - h2 ) );
+//     ASSERT_EQ( rect1.getTopLeft( ).getX( ),
+//                static_cast< TypeParam >( x1 - x2 ) );
+//     ASSERT_EQ( rect1.getTopLeft( ).getY( ),
+//                static_cast< TypeParam >( y1 - y2 ) );
+// }
 
 TYPED_TEST( TestCvlCoreRectangle, ScaleOperatorNewObjectTyped )
 {
