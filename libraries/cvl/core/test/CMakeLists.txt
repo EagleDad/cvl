@@ -32,6 +32,11 @@ add_gtest_executable(
         CVL::Core
 )
 
+set_compiler_warning_flags( 
+    STRICT
+    TARGET ${EXECUTABLE_NAME}
+)
+
 if ( MSVC )
     target_compile_options(${EXECUTABLE_NAME} PRIVATE /bigobj)
 endif( )

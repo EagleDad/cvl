@@ -49,11 +49,11 @@ TYPED_TEST_SUITE(
 
 TYPED_TEST( TestCvlProcessingArea, ValueConstruct )
 {
-    const auto randomArea = static_cast< double >( this->getRandomValue( ) );
+    //const auto randomArea = static_cast< double >( this->getRandomValue( ) );
 
-    const auto randomLabel = static_cast< int32_t >( this->getRandomValue( ) );
+    //const auto randomLabel = static_cast< int32_t >( this->getRandomValue( ) );
 
-    const Image< uint8_t, 1 > image( 16, 16 );
+    //const Image< uint8_t, 1 > image( 16, 16 );
 
  /*   Region< uint8_t, AlignedAllocator< uint8_t >, Area > region(
         image, randomLabel, randomArea );

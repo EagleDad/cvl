@@ -410,6 +410,7 @@ struct ConnectedComponentsDetector
                                                      RegionFeature... > > )
             {
                 int test = 1;
+                std::ignore = test;
             }
 
             regionsOut.push_back(

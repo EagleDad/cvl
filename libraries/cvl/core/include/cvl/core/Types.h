@@ -33,8 +33,8 @@ enum class PixelDirection
 
 enum class FilterDirection
 {
-    Row,    // Identification for a horizontal row filter
-    Column  // Identification for a vertical column filter
+    Row,   // Identification for a horizontal row filter
+    Column // Identification for a vertical column filter
 };
 
 } // namespace cvl::core

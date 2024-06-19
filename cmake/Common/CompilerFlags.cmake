@@ -6,11 +6,11 @@
 #   THIRD_PARTY - Used, when 3rd party modules are involved
 function( set_compiler_warning_flags )
 
-	#if(NOT CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-	#	message(FATAL_ERROR "Unsupported compiler")
-	#endif()
+    #if(NOT CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+        #message(FATAL_ERROR "Unsupported compiler")
+    #endif()
 
-	cmake_parse_arguments(
+    cmake_parse_arguments(
         pargs 
         "STRICT;THIRD_PARTY;"
         "TARGET;"
@@ -28,19 +28,19 @@ function( set_compiler_warning_flags )
 
     if ( MSVC )
 
-		set (_GLOBALLY_DISABLED_WARNINGS
-				/wd4251     # Disable: class 'type1' needs to have dll-interface to be used by clients of class 'type2'
-				/wd4275     # Disable: non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2'
-				/wd4514     # Disable: unreferenced inline function has been removed
-				/wd4668     # Disable: is not defined as a preprocessor macro, replacing with '0'
-				/wd4710     # Disable: function not inlined
-				/wd4711     # Disable: function selected for inline expansion
-				/wd5045     # Disable: Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
-				/wd4820     # Disable: bytes padding added after data member
-				/wd5264     # 'variable-name': 'const' variable is not used
-				/wd5262     # implicit fall-through occurs here; are you missing a break statement? Use [[fallthrough]] when a break statement is intentionally omitted between cases
-			)
-			
+        set (_GLOBALLY_DISABLED_WARNINGS
+            /wd4251     # Disable: class 'type1' needs to have dll-interface to be used by clients of class 'type2'
+            /wd4275     # Disable: non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2'
+            /wd4514     # Disable: unreferenced inline function has been removed
+            /wd4668     # Disable: is not defined as a preprocessor macro, replacing with '0'
+            /wd4710     # Disable: function not inlined
+            /wd4711     # Disable: function selected for inline expansion
+            /wd5045     # Disable: Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+            /wd4820     # Disable: bytes padding added after data member
+            /wd5264     # 'variable-name': 'const' variable is not used
+            /wd5262     # implicit fall-through occurs here; are you missing a break statement? Use [[fallthrough]] when a break statement is intentionally omitted between cases
+        )
+
         if( NOT pargs_THIRD_PARTY )
 
             target_compile_options( ${pargs_TARGET}
@@ -48,7 +48,7 @@ function( set_compiler_warning_flags )
                     -Wall       # Enable all warnings
                     /WX         # Warnings as errors
                     ${_GLOBALLY_DISABLED_WARNINGS}
-					/MP
+                    /MP
             )
 
         else()
@@ -57,8 +57,8 @@ function( set_compiler_warning_flags )
                 PRIVATE
                     -W2         # Warning level 2
                     /WX-        # Warnings are no errors
-					/MP
-					${_GLOBALLY_DISABLED_WARNINGS}
+                    /MP
+                    ${_GLOBALLY_DISABLED_WARNINGS}
             )
 
         endif()
@@ -87,15 +87,15 @@ function( enable_program_database )
 
     if ( MSVC )
 
-		target_compile_options( ${pargs_TARGET}
-			PRIVATE
-				/Zi			# Enable program database for all build types  
-		)
-		
-		target_link_options( ${pargs_TARGET}
-			PRIVATE
-				/DEBUG		# Debug needs to be anabled to generate PDB output
-		)
+        target_compile_options( ${pargs_TARGET}
+            PRIVATE
+            /Zi # Enable program database for all build types  
+        )
+
+        target_link_options( ${pargs_TARGET}
+            PRIVATE
+            /DEBUG  # Debug needs to be anabled to generate PDB output
+        )
 
     endif( MSVC )
 

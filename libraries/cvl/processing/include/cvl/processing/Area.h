@@ -48,8 +48,8 @@ double Area< Derived >::getArea( )
 template < typename Derived >
 void Area< Derived >::calculate( )
 {
-    auto& labelImage = this->underlying( ).getLabelImage( );
-    std::ignore = labelImage;
+    //auto& labelImage = this->underlying( ).getLabelImage( );
+    //std::ignore = labelImage;
     // mArea;
 }
 

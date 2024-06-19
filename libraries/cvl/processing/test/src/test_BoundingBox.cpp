@@ -62,11 +62,11 @@ TYPED_TEST_SUITE(
 
 TYPED_TEST( TestCvlProcessingBoundingBox, ValueConstruct )
 {
-    const auto randomRect = this->getRandomRect( );
+    //const auto randomRect = this->getRandomRect( );
 
-    const auto randomLabel = static_cast< int32_t >( this->getRandomValue( ) );
+    //const auto randomLabel = static_cast< int32_t >( this->getRandomValue( ) );
 
-    const Image< uint8_t, 1 > image( 16, 16 );
+    //const Image< uint8_t, 1 > image( 16, 16 );
 
     //Region< uint8_t, AlignedAllocator< uint8_t >, BoundingBox > region(
     //    image, randomLabel, randomRect );
