@@ -3,8 +3,8 @@ get_raw_target_name( ${LIBRARY_NAME} LIBRARY_NAME_RAW )
 
 add_library( ${LIBRARY_NAME_RAW} SHARED
     
-	include/Core.h
-	
+    include/Core.h
+
     include/cvl/core/AccessTraits.h
     include/cvl/core/AlignedAllocator.h
     include/cvl/core/Alignment.h
@@ -131,7 +131,7 @@ install(
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-	
+
     install(
         FILES $<TARGET_PDB_FILE:${LIBRARY_NAME_RAW}> 
         DESTINATION bin

@@ -4,8 +4,12 @@ add_subdirectory( imageAllocatorComparison )
 
 if ( MSVC )
 
-	if ( BUILD_WITH_CLR )
+    if ( BUILD_WITH_CLR )
 
-	endif( BUILD_WITH_CLR )
-	
+    endif( BUILD_WITH_CLR )
+
 endif( MSVC )
+
+if (  Qt6_FOUND )
+    add_subdirectory( qtImageViewer )
+endif ( )

@@ -60,6 +60,7 @@ include(GenerateExportHeader)
 
 # Modules
 include(Common)
+include(CopyRuntimeDependencies)
 
 if ( MSVC )
     list( APPEND CMAKE_MODULE_PATH
@@ -118,6 +119,14 @@ message(STATUS "  Install to: " "${CMAKE_INSTALL_PREFIX}")
 message(STATUS "-----------------------------------------------------------------")
 message(STATUS "")
 
+find_package ( Qt6 QUIET )
+
+if ( NOT Qt6_FOUND )
+    message( STATUS "QT not found" )
+else ( )
+    message( STATUS "QT found" )
+endif ( )
+
 # Let CMake load the CMakeLists.txt in the subdirectory to load the
 # sub-projects. Prefer lower-case names.
 add_subdirectory(libraries)
@@ -147,4 +156,3 @@ endif()
 set(CPACK_INSTALL_CMAKE_CONFIGURATIONS Debug Release)
 
 include(CPack)
-

@@ -48,6 +48,7 @@ private:
 
 static void BM_FixThreshold( benchmark::State& state )
 {
+    std::ignore = state;
     /*const auto size = static_cast< int32_t >( state.range( 0 ) );
     const Image< uint8_t, 1 > imgToCopy( size, size, false );
 
@@ -71,6 +72,9 @@ BENCHMARK( BM_FixThreshold )
     ->Arg( 2048 )
     ->Arg( 4096 )
     ->Complexity( benchmark::oN );
+
+
+BENCHMARK_MAIN( );
 
 
 #endif

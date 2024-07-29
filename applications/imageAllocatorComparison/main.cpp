@@ -355,6 +355,10 @@ int32_t main( [[maybe_unused]] int32_t argc, [[maybe_unused]] char** argv )
     addThread< std::allocator< uint8_t > >(
         threads, threadData, "std::allocator_1" );
 
+    /*std::allocator< int > a;
+    std::allocator< int > b;
+    b = std::move( a );*/
+
     //
     // cvl::core::AlignedAllocator
     //
